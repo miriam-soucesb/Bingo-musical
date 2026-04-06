@@ -1,735 +1,541 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>🎶 Bingo Musical</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-  :root {
-    --neon: #f0ff44; --hot: #ff3c6e; --cool: #00e5ff;
-    --deep: #0b0d17; --card: #12152a; --border: rgba(240,255,68,0.2);
-    --green: #1ed760;
-  }
-  * { box-sizing: border-box; }
-  body {
-    background: var(--deep); font-family: 'Space Grotesk', sans-serif;
-    color: #e2e8f0; min-height: 100vh;
-    background-image:
-      radial-gradient(ellipse 80% 50% at 20% 0%, rgba(240,255,68,0.07) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(255,60,110,0.08) 0%, transparent 60%);
-  }
-  h1,h2,h3 { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; }
-  .step-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; transition: border-color 0.3s; }
-  .step-card:hover { border-color: rgba(240,255,68,0.35); }
-  .step-badge { background: var(--neon); color: var(--deep); font-family: 'Bebas Neue',sans-serif; font-size: 1.1rem; width:32px; height:32px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
-  input[type="text"],input[type="number"],input[type="url"],textarea {
-    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 10px; color: #e2e8f0; padding: 10px 14px; width: 100%;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    font-family: 'Space Grotesk',sans-serif; font-size: 0.9rem;
-  }
-  input:focus,textarea:focus { outline:none; border-color:var(--neon); box-shadow:0 0 0 3px rgba(240,255,68,0.12); }
-  input.input-error { border-color:var(--hot)!important; box-shadow:0 0 0 3px rgba(255,60,110,0.15)!important; }
-  input.input-ok    { border-color:#22c55e!important; box-shadow:0 0 0 3px rgba(34,197,94,0.12)!important; }
-  textarea { resize:vertical; min-height:130px; }
-  label { font-size:0.82rem; font-weight:600; color:#94a3b8; letter-spacing:0.05em; text-transform:uppercase; display:block; margin-bottom:6px; }
-  .btn { display:inline-flex; align-items:center; gap:6px; padding:10px 20px; border-radius:10px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:0.9rem; cursor:pointer; transition:all 0.18s ease; border:none; white-space:nowrap; }
-  .btn-primary { background:var(--neon); color:var(--deep); }
-  .btn-primary:hover { background:#e8f53a; transform:translateY(-1px); box-shadow:0 4px 18px rgba(240,255,68,0.35); }
-  .btn-secondary { background:transparent; color:var(--neon); border:1px solid rgba(240,255,68,0.4); }
-  .btn-secondary:hover { background:rgba(240,255,68,0.08); transform:translateY(-1px); }
-  .btn-hot { background:var(--hot); color:#fff; }
-  .btn-hot:hover { background:#ff1a55; transform:translateY(-1px); box-shadow:0 4px 18px rgba(255,60,110,0.4); }
-  .btn-green { background:var(--green); color:#000; }
-  .btn-green:hover { background:#18c050; transform:translateY(-1px); box-shadow:0 4px 18px rgba(30,215,96,0.4); }
-  .btn:disabled { opacity:0.4; cursor:not-allowed; transform:none!important; box-shadow:none!important; }
-  .msg { border-radius:10px; padding:10px 14px; font-size:0.85rem; margin-top:10px; line-height:1.5; }
-  .msg-error { background:rgba(255,60,110,0.10); border:1px solid rgba(255,60,110,0.4); color:#fca5a5; }
-  .msg-warn  { background:rgba(251,191,36,0.10); border:1px solid rgba(251,191,36,0.4); color:#fde68a; }
-  .msg-ok    { background:rgba(34,197,94,0.08);  border:1px solid rgba(34,197,94,0.35); color:#86efac; }
-  .msg-info  { background:rgba(0,229,255,0.07);  border:1px solid rgba(0,229,255,0.3);  color:#67e8f9; }
-  .bingo-card { background:linear-gradient(135deg,#161a30 0%,#1e2240 100%); border:1px solid rgba(240,255,68,0.3); border-radius:12px; padding:16px; break-inside:avoid; }
-  .bingo-cell { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:10px 8px; text-align:center; font-size:0.78rem; font-weight:600; line-height:1.25; min-height:54px; display:flex; align-items:center; justify-content:center; transition:background 0.25s,border-color 0.25s,color 0.25s; }
-  .bingo-cell.marked { background:rgba(240,255,68,0.18); border-color:var(--neon); color:var(--neon); }
-  .played-badge { background:rgba(0,229,255,0.10); border:1px solid rgba(0,229,255,0.28); border-radius:8px; padding:4px 10px; font-size:0.78rem; color:var(--cool); display:inline-block; margin:2px; }
-  .pulse-neon { animation:pulseNeon 2s ease-in-out infinite; }
-  @keyframes pulseNeon { 0%,100%{box-shadow:0 0 8px rgba(240,255,68,0.25)} 50%{box-shadow:0 0 22px rgba(240,255,68,0.65)} }
-  .pulse-green { animation:pulseGreen 2s ease-in-out infinite; }
-  @keyframes pulseGreen { 0%,100%{box-shadow:0 0 8px rgba(30,215,96,0.2)} 50%{box-shadow:0 0 20px rgba(30,215,96,0.55)} }
-  .current-artist-box { background:linear-gradient(135deg,rgba(240,255,68,0.10),rgba(255,60,110,0.07)); border:1px solid rgba(240,255,68,0.38); border-radius:14px; padding:20px; }
-  .artist-name-big { font-family:'Bebas Neue',sans-serif; font-size:clamp(1.8rem,4.5vw,2.8rem); color:var(--neon); letter-spacing:0.06em; line-height:1.1; word-break:break-word; }
-  .progress-bar-bg { background:rgba(255,255,255,0.08); border-radius:99px; height:6px; }
-  .progress-bar-fill { height:6px; border-radius:99px; background:linear-gradient(90deg,var(--neon),var(--hot)); transition:width 0.4s ease; }
-  .pool-tag { background:rgba(240,255,68,0.07); border:1px solid rgba(240,255,68,0.18); border-radius:6px; padding:3px 9px; font-size:0.74rem; color:#cbd5e1; display:inline-block; margin:2px; }
-  .warn-item { background:rgba(251,191,36,0.07); border-left:3px solid #fbbf24; padding:5px 10px; border-radius:0 6px 6px 0; font-size:0.78rem; color:#fde68a; margin:3px 0; }
-  .spotify-status-dot { width:8px; height:8px; border-radius:50%; background:var(--green); display:inline-block; animation:blink 1.5s ease-in-out infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-  .collapsible { overflow:hidden; transition:max-height 0.35s ease; }
-  .collapsible.closed { max-height:0; }
-  .collapsible.open  { max-height:4000px; }
-  ::-webkit-scrollbar { width:5px; }
-  ::-webkit-scrollbar-thumb { background:rgba(240,255,68,0.2); border-radius:99px; }
-  #spotify-embed-container iframe { border-radius:12px; }
-  @media print {
-    body>*:not(#print-zone) { display:none!important; }
-    #print-zone { display:block!important; }
-  }
-  #print-zone { display:none; }
+:root{
+  --neon:#f0ff44; --hot:#ff3c6e; --cool:#00e5ff; --green:#1ed760;
+  --deep:#080a12; --surface:#0f1220; --card:#151828;
+  --border:rgba(255,255,255,0.07); --border-accent:rgba(240,255,68,0.22);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--deep); font-family:'DM Sans',sans-serif;
+  color:#e2e8f0; min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 10% 0%,rgba(240,255,68,0.06) 0%,transparent 55%),
+    radial-gradient(ellipse 50% 40% at 90% 100%,rgba(255,60,110,0.07) 0%,transparent 55%);
+}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;flex-direction:column;}
+
+/* ── HOME ── */
+#screen-home{align-items:center;justify-content:center;padding:2rem;}
+.home-logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,10vw,7rem);letter-spacing:0.04em;line-height:0.9;text-align:center;}
+.home-logo span{color:var(--neon);}
+.home-sub{color:#475569;font-size:0.95rem;text-align:center;margin-top:0.75rem;}
+.home-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;width:100%;max-width:560px;margin-top:3rem;}
+@media(max-width:480px){.home-cards{grid-template-columns:1fr;}}
+.hbtn{border-radius:18px;padding:2rem 1.5rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;cursor:pointer;border:none;transition:all 0.22s ease;text-align:center;}
+.hbtn-a{background:var(--neon);color:#080a12;}
+.hbtn-a:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(240,255,68,0.32);}
+.hbtn-b{background:var(--surface);color:#e2e8f0;border:1px solid var(--border-accent);}
+.hbtn-b:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(255,60,110,0.18);border-color:rgba(255,60,110,0.45);}
+.hbtn-icon{font-size:2.5rem;line-height:1;}
+.hbtn-label{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:0.05em;}
+.hbtn-desc{font-size:0.76rem;opacity:0.6;line-height:1.45;}
+
+/* ── PHASE LAYOUT ── */
+.phase-wrap{max-width:680px;width:100%;margin:0 auto;padding:2rem 1.25rem 5rem;}
+.phase-header{display:flex;align-items:center;gap:1rem;margin-bottom:2.5rem;}
+.back-btn{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;padding:8px 14px;color:#64748b;cursor:pointer;font-size:0.84rem;font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;flex-shrink:0;}
+.back-btn:hover{background:rgba(255,255,255,0.09);color:#e2e8f0;}
+.phase-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,5vw,2.6rem);letter-spacing:0.05em;line-height:1;}
+
+/* ── STEPS ── */
+.step-block{margin-bottom:1rem;transition:all 0.25s;}
+
+/* step states */
+.step-card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:border-color 0.25s,opacity 0.25s;}
+.step-card.locked{opacity:0.38;pointer-events:none;}
+.step-card.done{border-color:rgba(30,215,96,0.3);}
+.step-card.active{border-color:var(--border-accent);}
+
+/* step header (always visible, clickable when done) */
+.step-header{display:flex;align-items:center;gap:0.875rem;padding:1.25rem 1.5rem;cursor:default;}
+.step-card.done .step-header{cursor:pointer;}
+.step-card.done .step-header:hover{background:rgba(255,255,255,0.02);}
+.step-num{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Bebas Neue',sans-serif;font-size:1rem;transition:background 0.25s,color 0.25s;}
+.step-num-pending{background:rgba(255,255,255,0.08);color:#475569;}
+.step-num-active{background:var(--neon);color:#080a12;}
+.step-num-done{background:var(--green);color:#080a12;}
+.step-title-txt{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:0.04em;flex:1;}
+.step-title-active{color:var(--neon);}
+.step-title-done{color:#86efac;}
+.step-title-pending{color:#475569;}
+.step-check{color:var(--green);font-size:1rem;flex-shrink:0;}
+.step-summary{font-size:0.78rem;color:#475569;margin-left:auto;flex-shrink:0;max-width:160px;text-align:right;line-height:1.3;}
+
+/* step body */
+.step-body{padding:0 1.5rem 1.5rem;display:none;}
+.step-card.active .step-body{display:block;}
+
+/* ── CONTENT ELEMENTS ── */
+.step-desc{font-size:0.84rem;color:#64748b;line-height:1.6;margin-bottom:1rem;}
+.step-desc strong{color:#94a3b8;}
+
+.exportify-box{background:rgba(0,229,255,0.04);border:1px solid rgba(0,229,255,0.14);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;}
+.exportify-box ol{padding-left:1.2rem;display:flex;flex-direction:column;gap:0.4rem;}
+.exportify-box li{font-size:0.83rem;color:#64748b;line-height:1.5;}
+.exportify-box a{color:var(--cool);text-decoration:underline;}
+.exportify-box strong{color:#94a3b8;}
+
+/* inputs */
+label.lbl{font-size:0.76rem;font-weight:600;color:#475569;letter-spacing:0.07em;text-transform:uppercase;display:block;margin-bottom:6px;}
+input[type=number],input[type=text]{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e2e8f0;padding:10px 14px;width:100%;font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:border-color 0.2s,box-shadow 0.2s;}
+input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,255,68,0.1);}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 22px;border-radius:11px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.88rem;cursor:pointer;transition:all 0.18s;border:none;white-space:nowrap;}
+.btn-neon{background:var(--neon);color:#080a12;}
+.btn-neon:hover{background:#e8f53a;transform:translateY(-1px);box-shadow:0 6px 20px rgba(240,255,68,0.3);}
+.btn-outline{background:transparent;color:var(--neon);border:1px solid rgba(240,255,68,0.3);}
+.btn-outline:hover{background:rgba(240,255,68,0.07);transform:translateY(-1px);}
+.btn-ghost{background:rgba(255,255,255,0.05);color:#94a3b8;border:1px solid var(--border);}
+.btn-ghost:hover{background:rgba(255,255,255,0.09);color:#e2e8f0;}
+.btn-hot{background:var(--hot);color:#fff;}
+.btn-hot:hover{background:#ff1a55;transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,60,110,0.35);}
+.btn-green{background:var(--green);color:#000;}
+.btn-green:hover{background:#18c050;transform:translateY(-1px);box-shadow:0 6px 20px rgba(30,215,96,0.35);}
+.btn:disabled{opacity:0.35;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
+.btn-row{display:flex;gap:0.625rem;margin-top:1.25rem;flex-wrap:wrap;}
+
+/* messages */
+.msg{border-radius:10px;padding:11px 15px;font-size:0.83rem;line-height:1.55;margin-top:0.75rem;}
+.msg-error{background:rgba(255,60,110,0.09);border:1px solid rgba(255,60,110,0.32);color:#fca5a5;}
+.msg-warn {background:rgba(251,191,36,0.09);border:1px solid rgba(251,191,36,0.32);color:#fde68a;}
+.msg-ok   {background:rgba(30,215,96,0.07); border:1px solid rgba(30,215,96,0.28); color:#86efac;}
+.msg-info {background:rgba(0,229,255,0.06); border:1px solid rgba(0,229,255,0.22); color:#67e8f9;}
+.hidden{display:none!important;}
+
+/* chips */
+.chips-wrap{display:flex;flex-wrap:wrap;gap:6px;max-height:210px;overflow-y:auto;padding:2px;}
+.chip{display:inline-flex;align-items:center;gap:5px;background:rgba(240,255,68,0.07);border:1px solid rgba(240,255,68,0.16);border-radius:8px;padding:4px 10px 4px 12px;font-size:0.78rem;color:#cbd5e1;transition:all 0.14s;}
+.chip:hover{border-color:rgba(255,60,110,0.38);background:rgba(255,60,110,0.07);}
+.chip-x{background:none;border:none;cursor:pointer;color:#475569;font-size:0.95rem;line-height:1;padding:0 1px;transition:color 0.14s;}
+.chip-x:hover{color:var(--hot);}
+
+/* ── PHASE 2 ── */
+.notice-box{background:rgba(255,60,110,0.06);border:1px solid rgba(255,60,110,0.2);border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;}
+.notice-title{font-weight:700;font-size:0.88rem;color:#fca5a5;margin-bottom:0.6rem;}
+.notice-list{list-style:none;display:flex;flex-direction:column;gap:0.35rem;}
+.notice-list li{font-size:0.82rem;color:#64748b;display:flex;align-items:flex-start;gap:0.5rem;line-height:1.5;}
+.notice-list li::before{content:'→';color:var(--hot);flex-shrink:0;margin-top:1px;}
+.notice-list strong{color:#94a3b8;}
+
+.connect-card{background:var(--card);border:1px solid rgba(30,215,96,0.2);border-radius:18px;padding:1.5rem;margin-bottom:1.25rem;}
+
+.now-playing-box{background:linear-gradient(135deg,rgba(240,255,68,0.08),rgba(255,60,110,0.06));border:1px solid rgba(240,255,68,0.28);border-radius:18px;padding:2rem;text-align:center;margin-bottom:1.25rem;animation:glow 2.5s ease-in-out infinite;}
+@keyframes glow{0%,100%{box-shadow:0 0 10px rgba(240,255,68,0.12)}50%{box-shadow:0 0 28px rgba(240,255,68,0.35)}}
+.np-label{font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#475569;margin-bottom:0.5rem;}
+.np-artist{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,7vw,3.8rem);color:var(--neon);letter-spacing:0.06em;line-height:1;word-break:break-word;}
+.np-track{font-size:0.8rem;color:#475569;margin-top:0.35rem;font-style:italic;}
+.np-status{font-size:0.72rem;color:#334155;margin-top:0.5rem;}
+.prog-bg{background:rgba(255,255,255,0.07);border-radius:99px;height:4px;margin:0.75rem 0 0;}
+.prog-fill{height:4px;border-radius:99px;background:linear-gradient(90deg,var(--neon),var(--hot));transition:width 0.5s ease;}
+
+.played-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.5rem;}
+.played-title{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:0.04em;color:#64748b;margin-bottom:0.875rem;display:flex;align-items:center;gap:0.6rem;}
+.played-badge{background:rgba(0,229,255,0.09);border:1px solid rgba(0,229,255,0.22);border-radius:20px;padding:2px 10px;font-size:0.73rem;color:var(--cool);font-family:'DM Sans',sans-serif;}
+.played-list{display:flex;flex-wrap:wrap;gap:5px;max-height:250px;overflow-y:auto;}
+.played-chip{background:rgba(0,229,255,0.07);border:1px solid rgba(0,229,255,0.2);border-radius:8px;padding:4px 12px;font-size:0.79rem;color:#67e8f9;display:inline-block;}
+
+.connected-bar{background:rgba(30,215,96,0.07);border:1px solid rgba(30,215,96,0.22);border-radius:12px;padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.5rem;}
+.sp-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;animation:blink 1.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+
+.token-fallback-box{background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.16);border-radius:12px;padding:1rem;margin-top:0.875rem;}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:rgba(240,255,68,0.16);border-radius:99px;}
+
+/* print */
+@media print{body>*:not(#print-zone){display:none!important;}#print-zone{display:block!important;}}
+#print-zone{display:none;}
 </style>
 </head>
-<body class="p-4 md:p-6">
+<body>
 <div id="print-zone"></div>
 
-<!-- HEADER -->
-<header class="max-w-6xl mx-auto mb-7">
-  <div class="flex items-start gap-4 flex-wrap justify-between">
-    <div>
-      <h1 style="font-family:'Bebas Neue',sans-serif;letter-spacing:0.05em;line-height:1;font-size:clamp(2.6rem,6vw,4rem)">
-        🎶 BINGO <span style="color:var(--neon)">MUSICAL</span>
-      </h1>
-      <p class="text-slate-500 text-sm mt-1">Player Spotify · Detección automática · Cartones · PDF</p>
-    </div>
-    <div class="flex gap-2 flex-wrap items-center mt-1">
-      <button class="btn btn-secondary text-sm" onclick="exportSession()">Exportar 📦</button>
-      <label class="btn btn-secondary text-sm cursor-pointer">
-        Importar 📥<input type="file" accept=".json" class="hidden" onchange="importSession(event)" />
-      </label>
-      <button class="btn btn-secondary text-sm" onclick="toggleEl('manual-wrap')">📖 Manual</button>
-    </div>
-  </div>
-</header>
-
-<!-- MANUAL -->
-<div id="manual-wrap" class="max-w-6xl mx-auto mb-5 collapsible closed">
-  <div class="step-card p-5" style="border-color:rgba(0,229,255,0.2)">
-    <h2 class="text-xl mb-3" style="color:var(--cool)">📖 Cómo usar</h2>
-    <div class="grid md:grid-cols-2 gap-4 text-sm text-slate-300">
-      <div><p class="font-semibold text-white mb-1">1️⃣ Playlist + Artistas</p>
-        <p>Pega la URL de tu playlist → aparece el player. Para los artistas: ve a <strong>exportify.net</strong>, descarga el CSV y pulsa <strong>"Importar CSV 📄"</strong>. También puedes escribirlos a mano.</p></div>
-      <div><p class="font-semibold text-white mb-1">2️⃣ Generar cartones</p>
-        <p>Indica cuántas personas juegan. Cada cartón tiene 6 artistas aleatorios únicos. Necesitas mínimo 6 artistas.</p></div>
-      <div><p class="font-semibold text-white mb-1">3️⃣ PDF / Imprimir</p>
-        <p>Descarga el PDF o usa Ctrl+P. Los cartones salen listos para tachar.</p></div>
-      <div><p class="font-semibold text-white mb-1">4️⃣ Panel del Host — Automático</p>
-        <p>Pulsa <strong>"Conectar Spotify 🟢"</strong>, autoriza, y la app detecta sola el artista que suena cada 5 segundos. También puedes avanzar manualmente si prefieres.</p></div>
+<!-- ════════════════════════════════
+     HOME
+════════════════════════════════ -->
+<div id="screen-home" class="screen active">
+  <div style="max-width:600px;width:100%;margin:0 auto;padding:3rem 1.5rem;display:flex;flex-direction:column;align-items:center;">
+    <div class="home-logo">🎶 BINGO<br><span>MUSICAL</span></div>
+    <p class="home-sub">Crea los cartones · Conecta Spotify · ¡A jugar!</p>
+    <div class="home-cards">
+      <button class="hbtn hbtn-a" onclick="goTo('phase1')">
+        <span class="hbtn-icon">🎴</span>
+        <span class="hbtn-label">Generar partida</span>
+        <span class="hbtn-desc">Importa tu playlist, edita el pool de artistas y descarga los cartones en PDF</span>
+      </button>
+      <button class="hbtn hbtn-b" onclick="goTo('phase2')">
+        <span class="hbtn-icon">🎮</span>
+        <span class="hbtn-label">¡A jugar!</span>
+        <span class="hbtn-desc">Conecta Spotify y detecta automáticamente cada artista que suena</span>
+      </button>
     </div>
   </div>
 </div>
 
-<!-- MAIN -->
-<main class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-5">
+<!-- ════════════════════════════════
+     PHASE 1 — GENERAR PARTIDA
+════════════════════════════════ -->
+<div id="screen-phase1" class="screen">
+  <div class="phase-wrap">
 
-  <!-- LEFT -->
-  <div class="lg:col-span-2 flex flex-col gap-5">
+    <div class="phase-header">
+      <button class="back-btn" onclick="goTo('home')">← Inicio</button>
+      <h1 class="phase-title">🎴 Generar <span style="color:var(--neon)">Partida</span></h1>
+    </div>
 
-    <!-- STEP 1 -->
-    <div class="step-card p-5">
-      <div class="flex items-center gap-3 mb-5">
-        <span class="step-badge">1</span>
-        <h2 class="text-2xl" style="color:var(--neon)">Playlist y Artistas 🎸</h2>
-      </div>
-
-      <!-- URL -->
-      <div class="mb-1">
-        <label>URL de la Playlist de Spotify <span class="normal-case font-normal text-slate-600">(para el player)</span></label>
-        <div class="flex gap-2">
-          <input type="url" id="playlist-url" placeholder="https://open.spotify.com/playlist/..." oninput="onUrlInput()" />
-          <button class="btn btn-secondary shrink-0" onclick="applyUrl()">Cargar 🎵</button>
+    <!-- ── STEP 1: Importar CSV ── -->
+    <div class="step-block">
+      <div class="step-card active" id="sc1">
+        <div class="step-header" onclick="jumpTo(1)">
+          <span class="step-num step-num-active" id="sn1">1</span>
+          <span class="step-title-txt step-title-active" id="st1">Importar artistas desde Spotify</span>
+          <span class="step-check hidden" id="sk1">✓</span>
+          <span class="step-summary hidden" id="ss1"></span>
         </div>
-        <div id="url-msg" class="hidden"></div>
+        <div class="step-body">
+          <p class="step-desc">Usamos <strong>Exportify</strong> para extraer los artistas de tu playlist automáticamente.</p>
+          <div class="exportify-box">
+            <ol>
+              <li>Abre <a href="https://exportify.net" target="_blank">exportify.net ↗</a> e inicia sesión con Spotify</li>
+              <li>Busca tu playlist y pulsa <strong>Export</strong> — se descarga un archivo .csv</li>
+              <li>Selecciona ese archivo con el botón de abajo</li>
+            </ol>
+          </div>
+          <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;">
+            📄 Seleccionar CSV de Exportify
+            <input type="file" accept=".csv" class="hidden" onchange="importCSV(event)"/>
+          </label>
+          <div id="csv-msg" class="hidden"></div>
+        </div>
       </div>
+    </div>
 
-      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.06);margin:20px 0" />
-
-      <!-- Artists -->
-      <div>
-        <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
-          <label style="margin-bottom:0">Artistas de la playlist</label>
-          <div class="flex items-center gap-2 flex-wrap">
-            <a href="https://exportify.net" target="_blank" class="text-xs underline" style="color:var(--cool);opacity:0.8">
-              1. Descarga CSV en exportify.net ↗
-            </a>
-            <label class="btn btn-secondary cursor-pointer" style="padding:6px 12px;font-size:0.8rem">
-              2. Importar CSV 📄
-              <input type="file" accept=".csv" class="hidden" onchange="importExportifyCSV(event)" />
-            </label>
+    <!-- ── STEP 2: Confirmar pool ── -->
+    <div class="step-block">
+      <div class="step-card locked" id="sc2">
+        <div class="step-header" onclick="jumpTo(2)">
+          <span class="step-num step-num-pending" id="sn2">2</span>
+          <span class="step-title-txt step-title-pending" id="st2">Confirmar artistas</span>
+          <span class="step-check hidden" id="sk2">✓</span>
+          <span class="step-summary hidden" id="ss2"></span>
+        </div>
+        <div class="step-body">
+          <p class="step-desc">Elimina los artistas que no quieras incluir pulsando la <strong>✕</strong>. Los duplicados ya están quitados automáticamente.</p>
+          <div class="chips-wrap" id="chips-wrap"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.875rem;flex-wrap:wrap;gap:0.5rem;">
+            <span style="font-size:0.8rem;color:#334155;">
+              <span id="pool-count" style="color:var(--neon);font-weight:700">0</span> artistas en el pool
+            </span>
+            <button class="btn btn-ghost" style="font-size:0.78rem;padding:6px 12px;" onclick="clearPool()">Limpiar todo</button>
+          </div>
+          <div id="pool-msg" class="hidden"></div>
+          <div class="btn-row">
+            <button class="btn btn-ghost" onclick="jumpTo(1)">← Atrás</button>
+            <button class="btn btn-neon" onclick="confirmPool()">Confirmar pool →</button>
           </div>
         </div>
-        <div id="csv-msg" class="hidden" style="margin-bottom:8px"></div>
-        <textarea id="manual-artists"
-          placeholder="Importa el CSV de exportify.net con el botón de arriba,&#10;o escribe los artistas aquí a mano (1 por línea):&#10;&#10;Rosalía&#10;Bad Bunny&#10;C. Tangana&#10;Daft Punk&#10;..."
-          oninput="onArtistsInput()"></textarea>
-        <div id="artist-warnings" class="hidden mt-2 p-3 rounded-lg" style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.22)">
-          <p class="text-xs font-semibold mb-2" style="color:#fbbf24">⚠️ Líneas que podrían tener problemas:</p>
-          <div id="warning-lines"></div>
-        </div>
-        <div class="flex gap-3 mt-3 flex-wrap items-center">
-          <button class="btn btn-primary" onclick="loadArtists()">Confirmar artistas ✅</button>
-          <span class="text-xs text-slate-500" id="artist-counter">0 líneas</span>
-        </div>
-        <div id="step1-msg" class="hidden"></div>
-      </div>
-
-      <!-- Pool -->
-      <div id="pool-preview" class="hidden mt-4">
-        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.06);margin:0 0 12px" />
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm font-semibold text-slate-300">Pool cargado
-            <span id="pool-count" class="text-xs px-2 py-0.5 rounded-full ml-1" style="background:rgba(240,255,68,0.12);color:var(--neon)">0</span>
-          </span>
-          <button class="text-xs text-slate-500 hover:text-slate-300 underline" onclick="clearAll()">Limpiar todo</button>
-        </div>
-        <div id="pool-tags" class="flex flex-wrap max-h-24 overflow-y-auto"></div>
       </div>
     </div>
 
-    <!-- STEP 2 -->
-    <div class="step-card p-5">
-      <div class="flex items-center gap-3 mb-4">
-        <span class="step-badge">2</span>
-        <h2 class="text-2xl" style="color:var(--neon)">Generar Cartones 🎴</h2>
-      </div>
-      <div class="flex gap-3 items-end flex-wrap">
-        <div class="min-w-[150px]">
-          <label>Número de cartones</label>
-          <input type="number" id="num-cards" value="4" min="1" max="200" />
+    <!-- ── STEP 3: Número de jugadores ── -->
+    <div class="step-block">
+      <div class="step-card locked" id="sc3">
+        <div class="step-header" onclick="jumpTo(3)">
+          <span class="step-num step-num-pending" id="sn3">3</span>
+          <span class="step-title-txt step-title-pending" id="st3">Número de jugadores</span>
+          <span class="step-check hidden" id="sk3">✓</span>
+          <span class="step-summary hidden" id="ss3"></span>
         </div>
-        <button class="btn btn-hot" onclick="generateCards()">Generar cartones 🎶</button>
-      </div>
-      <div id="step2-msg" class="hidden"></div>
-    </div>
-
-    <!-- STEP 3 -->
-    <div id="cards-section" class="hidden step-card p-5">
-      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <div class="flex items-center gap-3">
-          <span class="step-badge">3</span>
-          <h2 class="text-2xl" style="color:var(--neon)">Cartones 🖨️</h2>
-        </div>
-        <div class="flex gap-2">
-          <button class="btn btn-secondary" onclick="downloadPDF()">PDF 🖨️</button>
-          <button class="btn btn-secondary" onclick="window.print()">Imprimir</button>
-        </div>
-      </div>
-      <div id="cards-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
-    </div>
-
-  </div><!-- /LEFT -->
-
-  <!-- RIGHT -->
-  <div class="flex flex-col gap-5">
-
-    <!-- Player -->
-    <div class="step-card p-4">
-      <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.15rem;color:var(--cool);margin-bottom:10px">🎵 Player</h3>
-      <div id="spotify-embed-container">
-        <div class="text-xs text-slate-600 text-center p-6 rounded-lg" style="border:1px dashed rgba(255,255,255,0.08)">
-          Pega una URL de playlist y pulsa "Cargar 🎵"
-        </div>
-      </div>
-    </div>
-
-    <!-- Host Panel -->
-    <div class="step-card p-4">
-      <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.15rem;color:var(--hot);margin-bottom:12px">🎮 Panel del Host</h3>
-
-      <!-- Spotify Connect -->
-      <div id="spotify-auth-box" class="mb-3 p-3 rounded-xl text-center" style="background:rgba(30,215,96,0.07);border:1px solid rgba(30,215,96,0.22)">
-        <p class="text-xs text-slate-400 mb-2">Conecta Spotify para detección automática 🎵</p>
-        <button class="btn btn-green" style="font-size:0.85rem;padding:8px 18px" onclick="spotifyLogin()">
-          Conectar Spotify 🟢
-        </button>
-        <p class="text-xs text-slate-600 mt-2">o avanza manualmente con el botón de abajo</p>
-      </div>
-      <div id="spotify-auth-ok" class="hidden mb-3 p-3 rounded-xl" style="background:rgba(30,215,96,0.08);border:1px solid rgba(30,215,96,0.28)">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2 text-xs" style="color:#86efac">
-            <span class="spotify-status-dot"></span>
-            Spotify conectado — detectando cada 5s
+        <div class="step-body">
+          <p class="step-desc">Se generará un cartón único para cada jugador con 6 artistas aleatorios.</p>
+          <div style="max-width:180px;">
+            <label class="lbl">Jugadores</label>
+            <input type="number" id="num-players" value="4" min="1" max="200"/>
           </div>
-          <button onclick="spotifyDisconnect()" class="text-xs underline text-slate-500 hover:text-slate-300">Desconectar</button>
-        </div>
-        <div id="spotify-now-playing" class="text-xs text-slate-400 mt-1 truncate"></div>
-      </div>
-
-      <!-- Token manual fallback (collapsed) -->
-      <div id="token-fallback-wrap" class="collapsible closed mb-2">
-        <div class="p-3 rounded-xl mb-2" style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2)">
-          <p class="text-xs text-slate-400 mb-2">⚠️ Si el botón no funciona, pega aquí tu token manualmente:</p>
-          <input type="text" id="manual-token" placeholder="BQD..." style="font-size:0.78rem" />
-          <button class="btn btn-secondary mt-2" style="font-size:0.8rem;padding:6px 12px" onclick="setManualToken()">Usar este token</button>
-        </div>
-      </div>
-      <button class="text-xs text-slate-600 hover:text-slate-400 underline mb-3 block" onclick="toggleEl('token-fallback-wrap')">¿Problemas con el login? Pegar token manualmente</button>
-
-      <!-- Current artist -->
-      <div class="current-artist-box mb-3 text-center pulse-neon">
-        <p class="text-xs text-slate-500 uppercase tracking-widest mb-1">Sonando ahora</p>
-        <div class="artist-name-big" id="host-current-name">—</div>
-        <p class="text-xs text-slate-500 mt-1" id="host-song-name" style="font-style:italic;opacity:0.6"></p>
-        <p class="text-xs text-slate-500 mt-1" id="host-progress-text">Sin iniciar</p>
-      </div>
-
-      <div class="progress-bar-bg mb-3">
-        <div class="progress-bar-fill" id="host-progress-bar" style="width:0%"></div>
-      </div>
-
-      <div class="flex gap-2 justify-center flex-wrap mb-4">
-        <button class="btn btn-secondary" id="btn-next" onclick="hostNextManual()">Siguiente manual ⏭️</button>
-        <button class="btn btn-secondary" onclick="hostReset()">🔄 Reset</button>
-      </div>
-
-      <!-- Played list -->
-      <div>
-        <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">
-          Artistas sonados
-          <span id="played-count" class="text-xs px-2 py-0.5 rounded-full ml-1" style="background:rgba(0,229,255,0.10);color:var(--cool)">0</span>
-        </p>
-        <div id="played-list" class="flex flex-wrap gap-1 max-h-52 overflow-y-auto">
-          <span class="text-xs text-slate-600">Ninguno aún…</span>
+          <div id="players-msg" class="hidden"></div>
+          <div class="btn-row">
+            <button class="btn btn-ghost" onclick="jumpTo(2)">← Atrás</button>
+            <button class="btn btn-neon" onclick="confirmPlayers()">Confirmar →</button>
+          </div>
         </div>
       </div>
     </div>
 
-  </div><!-- /RIGHT -->
-</main>
+    <!-- ── STEP 4: Generar PDF ── -->
+    <div class="step-block">
+      <div class="step-card locked" id="sc4">
+        <div class="step-header">
+          <span class="step-num step-num-pending" id="sn4">4</span>
+          <span class="step-title-txt step-title-pending" id="st4">Descargar cartones en PDF</span>
+        </div>
+        <div class="step-body">
+          <p class="step-desc">Cada cartón ocupa <strong>media hoja A4</strong>. Imprímelos, recórtalos y repártelos antes de empezar.</p>
+          <div class="msg msg-info" style="margin-bottom:0;">
+            ⚠️ Durante la partida, reproduce <strong>únicamente las canciones de esta playlist</strong>. Los artistas añadidos después no contarán en el bingo.
+          </div>
+          <div id="generate-msg" class="hidden"></div>
+          <div class="btn-row">
+            <button class="btn btn-ghost" onclick="jumpTo(3)">← Atrás</button>
+            <button class="btn btn-hot" onclick="generatePDF()" style="flex:1;">🎶 Generar cartones y descargar PDF</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<footer class="max-w-6xl mx-auto mt-10 text-center text-xs text-slate-700 pb-6">
-  🎶 Bingo Musical · Spotify OAuth PKCE · Un solo archivo HTML
-</footer>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     PHASE 2 — A JUGAR
+════════════════════════════════ -->
+<div id="screen-phase2" class="screen">
+  <div class="phase-wrap">
+
+    <div class="phase-header">
+      <button class="back-btn" onclick="goTo('home')">← Inicio</button>
+      <h1 class="phase-title">🎮 ¡A <span style="color:var(--neon)">Jugar!</span></h1>
+    </div>
+
+    <!-- Aviso importante -->
+    <div class="notice-box">
+      <div class="notice-title">⚠️ Instrucciones para el host</div>
+      <ul class="notice-list">
+        <li>Abre <strong>Spotify en tu móvil o PC</strong> — la app oficial, no este navegador</li>
+        <li>Reproduce <strong>únicamente las canciones de la playlist</strong> con la que generaste los cartones</li>
+        <li>Esta web detectará automáticamente cada artista que suene cada 5 segundos</li>
+        <li>Si reproduces canciones de otra playlist, <strong style="color:#fca5a5">el sistema no las registrará</strong></li>
+      </ul>
+    </div>
+
+    <!-- Conectar Spotify -->
+    <div class="connect-card" id="connect-card">
+      <p style="font-size:0.84rem;color:#64748b;margin-bottom:1rem;">Conecta tu cuenta de Spotify Premium para que el sistema detecte qué artista está sonando en tiempo real.</p>
+      <button class="btn btn-green" style="width:100%;font-size:1rem;padding:14px;" onclick="spotifyLogin()">
+        🟢 Conectar con Spotify
+      </button>
+      <div style="margin-top:0.875rem;">
+        <button onclick="toggleFallback()" style="background:none;border:none;color:#334155;font-size:0.76rem;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;">¿Problemas con el login? Pegar token manualmente</button>
+        <div id="token-fallback-box" class="token-fallback-box hidden">
+          <label class="lbl">Access Token de Spotify</label>
+          <input type="text" id="manual-token" placeholder="BQD..." style="margin-bottom:8px;"/>
+          <button class="btn btn-outline" style="font-size:0.82rem;padding:8px 16px;" onclick="useManualToken()">Usar este token</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connected state -->
+    <div id="connected-state" class="hidden">
+
+      <div class="connected-bar">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="sp-dot"></span>
+          <span style="font-size:0.84rem;color:#86efac;font-weight:600;">Spotify conectado</span>
+          <span style="font-size:0.76rem;color:#334155;">· detectando cada 5s</span>
+        </div>
+        <button onclick="spotifyDisconnect()" style="background:none;border:none;color:#334155;font-size:0.76rem;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;">Desconectar</button>
+      </div>
+
+      <!-- Now playing -->
+      <div class="now-playing-box">
+        <div class="np-label">Sonando ahora 🎵</div>
+        <div class="np-artist" id="np-artist">—</div>
+        <div class="np-track" id="np-track"></div>
+        <div class="prog-bg"><div class="prog-fill" id="np-prog" style="width:0%"></div></div>
+        <div class="np-status" id="np-status">Esperando reproducción en Spotify…</div>
+      </div>
+
+      <!-- Played -->
+      <div class="played-box">
+        <div class="played-title">
+          Artistas que ya han sonado
+          <span class="played-badge" id="played-count">0</span>
+        </div>
+        <div class="played-list" id="played-list">
+          <span style="font-size:0.81rem;color:#1e293b;font-style:italic;">Ninguno aún… pon música en Spotify 🎵</span>
+        </div>
+      </div>
+
+      <!-- Manual controls -->
+      <div style="display:flex;gap:0.5rem;margin-top:1rem;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-ghost" style="font-size:0.8rem;" onclick="manualNext()">Avance manual ⏭️</button>
+        <button class="btn btn-ghost" style="font-size:0.8rem;" onclick="resetSession()">🔄 Reset sesión</button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
 
 <script>
-// ============================================================
+// ══════════════════════════════════════
 // CONFIG
-// ============================================================
-const SPOTIFY_CLIENT_ID = 'af79a5dd0e404324a8ee22fc2d850051';
-const SPOTIFY_SCOPES    = 'user-read-currently-playing user-read-playback-state';
-// Redirect URI: debe coincidir EXACTAMENTE con lo que pusiste en el dashboard de Spotify
-// Usa la URL con la que abres este archivo. Ejemplos:
-//   file:///C:/Users/tu/bingo-musical.html
-//   http://127.0.0.1:5500/bingo-musical.html
-// La app detecta automáticamente la URL actual:
-const REDIRECT_URI = 'https://miriam-soucesb.github.io/Bingo-musical/';
+// ══════════════════════════════════════
+const CLIENT_ID = 'af79a5dd0e404324a8ee22fc2d850051';
+const SCOPES    = 'user-read-currently-playing user-read-playback-state';
+const REDIRECT  = 'https://miriam-soucesb.github.io/Bingo-musical/';
 
-// ============================================================
+// ══════════════════════════════════════
 // STATE
-// ============================================================
-const state = {
-  playlistUrl: '', artists: [], cards: [],
-  shuffleOrder: [], currentIndex: -1, played: [],
-  spotifyToken: null, pollingInterval: null,
+// ══════════════════════════════════════
+const S = {
+  artists: [],   // confirmed pool
+  numPlayers: 4,
+  cards: [],
+  played: [],
+  token: null,
+  pollTimer: null,
   lastTrackId: null,
+  currentStep: 1,  // 1-4
 };
 
-// ============================================================
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+function goTo(screen){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+screen).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ══════════════════════════════════════
 // UTILS
-// ============================================================
+// ══════════════════════════════════════
 const $ = id => document.getElementById(id);
-const normalize = s => (s||'').trim().replace(/\s+/g,' ');
-const escHtml   = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-function dedup(arr){ const s=new Set(); return arr.filter(a=>{const k=a.toLowerCase();if(s.has(k))return false;s.add(k);return true;}); }
-function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
-function toggleEl(id){ const el=$(id); el.classList.toggle('open'); el.classList.toggle('closed'); }
-function showMsg(id,html,type='error'){ const el=$(id); el.className=`msg msg-${type}`; el.innerHTML=html; el.classList.remove('hidden'); }
-function hideMsg(id){ $(id).classList.add('hidden'); }
-
-// ============================================================
-// SPOTIFY OAUTH PKCE
-// ============================================================
-async function generateCodeVerifier(length=128){
-  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-  const arr=new Uint8Array(length);
-  crypto.getRandomValues(arr);
-  return Array.from(arr,b=>chars[b%chars.length]).join('');
+const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const norm = s => (s||'').trim().replace(/\s+/g,' ');
+function dedup(arr){
+  const seen=new Set();
+  return arr.filter(a=>{const k=norm(a).toLowerCase();if(seen.has(k))return false;seen.add(k);return true;});
 }
-async function generateCodeChallenge(verifier){
-  const enc=new TextEncoder().encode(verifier);
-  const digest=await crypto.subtle.digest('SHA-256',enc);
-  return btoa(String.fromCharCode(...new Uint8Array(digest))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-}
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function showMsg(id,html,type='error'){const el=$(id);el.className=`msg msg-${type}`;el.innerHTML=html;el.classList.remove('hidden');}
+function hideMsg(id){$(id).classList.add('hidden');}
 
-async function spotifyLogin(){
-  const verifier = await generateCodeVerifier();
-  const challenge = await generateCodeChallenge(verifier);
-  sessionStorage.setItem('pkce_verifier', verifier);
-  // Save current app state so we can restore after redirect
-  sessionStorage.setItem('app_state', JSON.stringify({
-    playlistUrl: state.playlistUrl,
-    artists: state.artists,
-    cards: state.cards,
-    shuffleOrder: state.shuffleOrder,
-    currentIndex: state.currentIndex,
-    played: state.played,
-  }));
+// ══════════════════════════════════════
+// STEP MACHINE
+// ══════════════════════════════════════
+// States: 'locked' | 'active' | 'done'
+function setStep(n, state){
+  const card = $(`sc${n}`);
+  const num  = $(`sn${n}`);
+  const title= $(`st${n}`);
+  const check= $(`sk${n}`);
+  const summ = $(`ss${n}`);
 
-  const params = new URLSearchParams({
-    client_id: SPOTIFY_CLIENT_ID,
-    response_type: 'code',
-    redirect_uri: REDIRECT_URI,
-    scope: SPOTIFY_SCOPES,
-    code_challenge_method: 'S256',
-    code_challenge: challenge,
-  });
-  window.location = 'https://accounts.spotify.com/authorize?' + params.toString();
-}
+  card.classList.remove('locked','active','done');
+  num.classList.remove('step-num-pending','step-num-active','step-num-done');
+  title.classList.remove('step-title-pending','step-title-active','step-title-done');
 
-async function handleOAuthCallback(){
-  const params = new URLSearchParams(window.location.search);
-  const code  = params.get('code');
-  const error = params.get('error');
-
-  if(error){
-    showMsg('step1-msg', `❌ Spotify rechazó la conexión: ${error}`, 'error');
-    clearUrlParams();
-    return;
-  }
-  if(!code) return; // no callback, normal load
-
-  const verifier = sessionStorage.getItem('pkce_verifier');
-  if(!verifier){
-    showMsg('step1-msg','❌ Error interno: no se encontró el verifier PKCE. Intenta conectar de nuevo.','error');
-    clearUrlParams(); return;
-  }
-
-  try {
-    const res = await fetch('https://accounts.spotify.com/api/token',{
-      method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body: new URLSearchParams({
-        client_id: SPOTIFY_CLIENT_ID,
-        grant_type: 'authorization_code',
-        code, redirect_uri: REDIRECT_URI,
-        code_verifier: verifier,
-      })
-    });
-    const data = await res.json();
-    if(!res.ok) throw new Error(data.error_description || data.error || `HTTP ${res.status}`);
-
-    state.spotifyToken = data.access_token;
-    sessionStorage.removeItem('pkce_verifier');
-
-    // Restore state saved before redirect
-    const saved = sessionStorage.getItem('app_state');
-    if(saved){
-      try{
-        const s = JSON.parse(saved);
-        Object.assign(state, s);
-        if(state.artists.length) renderPool();
-        if(state.cards.length) renderCards();
-        if(state.playlistUrl){
-          $('playlist-url').value = state.playlistUrl;
-          const id = extractPlaylistId(state.playlistUrl);
-          if(id){ renderEmbed(id); $('playlist-url').classList.add('input-ok'); }
-        }
-        updateHostPanel();
-      } catch(e){}
-      sessionStorage.removeItem('app_state');
-    }
-
-    clearUrlParams();
-    onSpotifyConnected();
-    startPolling();
-
-  } catch(err){
-    showMsg('step1-msg',`❌ Error al obtener token de Spotify: ${err.message}`,'error');
-    clearUrlParams();
+  if(state==='locked'){
+    card.classList.add('locked');
+    num.classList.add('step-num-pending');
+    title.classList.add('step-title-pending');
+    if(check) check.classList.add('hidden');
+    if(summ)  summ.classList.add('hidden');
+  } else if(state==='active'){
+    card.classList.add('active');
+    num.classList.add('step-num-active');
+    title.classList.add('step-title-active');
+    if(check) check.classList.add('hidden');
+    if(summ)  summ.classList.add('hidden');
+    // scroll into view
+    card.scrollIntoView({behavior:'smooth',block:'nearest'});
+  } else if(state==='done'){
+    card.classList.add('done');
+    num.classList.add('step-num-done');
+    title.classList.add('step-title-done');
+    if(check) check.classList.remove('hidden');
   }
 }
 
-function clearUrlParams(){
-  window.history.replaceState({}, document.title, window.location.pathname);
+function jumpTo(n){
+  // Only allow jumping to a done or active step
+  if(n > S.currentStep) return;
+  activateStep(n);
 }
 
-function onSpotifyConnected(){
-  $('spotify-auth-box').classList.add('hidden');
-  $('spotify-auth-ok').classList.remove('hidden');
-}
-
-function spotifyDisconnect(){
-  state.spotifyToken = null;
-  if(state.pollingInterval){ clearInterval(state.pollingInterval); state.pollingInterval = null; }
-  $('spotify-auth-ok').classList.add('hidden');
-  $('spotify-auth-box').classList.remove('hidden');
-  $('spotify-now-playing').textContent = '';
-}
-
-function setManualToken(){
-  const t = $('manual-token').value.trim();
-  if(!t){ alert('Pega un token válido.'); return; }
-  state.spotifyToken = t;
-  onSpotifyConnected();
-  startPolling();
-  // collapse the fallback panel
-  const w = $('token-fallback-wrap');
-  w.classList.remove('open'); w.classList.add('closed');
-}
-
-// ============================================================
-// SPOTIFY POLLING — Currently Playing
-// ============================================================
-function startPolling(){
-  if(state.pollingInterval) clearInterval(state.pollingInterval);
-  pollCurrentlyPlaying(); // immediate first call
-  state.pollingInterval = setInterval(pollCurrentlyPlaying, 5000);
-}
-
-async function pollCurrentlyPlaying(){
-  if(!state.spotifyToken) return;
-  try {
-    const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing',{
-      headers:{ Authorization:`Bearer ${state.spotifyToken}` }
-    });
-
-    if(res.status === 204){ // nothing playing
-      $('spotify-now-playing').textContent = '▶️ Nada sonando ahora mismo';
-      return;
-    }
-    if(res.status === 401){
-      // Token expired
-      spotifyDisconnect();
-      showMsg('step1-msg','⚠️ La sesión de Spotify ha expirado. Vuelve a conectar.','warn');
-      return;
-    }
-    if(!res.ok) return;
-
-    const data = await res.json();
-    if(!data.item || !data.is_playing) return;
-
-    const trackId   = data.item.id;
-    const trackName = data.item.name;
-    const artists   = data.item.artists.map(a=>a.name);
-    const artistStr = artists.join(', ');
-
-    // Update now-playing display
-    $('spotify-now-playing').textContent = `▶️ ${trackName} — ${artistStr}`;
-
-    // Only process if it's a new track
-    if(trackId === state.lastTrackId) return;
-    state.lastTrackId = trackId;
-
-    // Try to match each artist against the pool
-    const matched = matchArtistFromPool(artists);
-    if(matched){
-      addPlayedArtist(matched, trackName);
-    } else {
-      // Artist not in pool — show info but don't add
-      $('spotify-now-playing').textContent += ' (artista no está en el pool)';
-    }
-
-  } catch(e){ /* network error, retry next tick */ }
-}
-
-function matchArtistFromPool(spotifyArtists){
-  // Try exact match first, then partial
-  for(const sa of spotifyArtists){
-    const norm = normalize(sa).toLowerCase();
-    const exact = state.artists.find(a => normalize(a).toLowerCase() === norm);
-    if(exact) return exact;
-  }
-  // Partial: pool artist contained in spotify artist name or vice versa
-  for(const sa of spotifyArtists){
-    const norm = normalize(sa).toLowerCase();
-    const partial = state.artists.find(a => {
-      const an = normalize(a).toLowerCase();
-      return norm.includes(an) || an.includes(norm);
-    });
-    if(partial) return partial;
-  }
-  return null;
-}
-
-function addPlayedArtist(artist, trackName){
-  // Don't add duplicates
-  if(state.played.some(p => p.toLowerCase() === artist.toLowerCase())) return;
-  state.played.push(artist);
-  $('host-current-name').textContent = artist;
-  $('host-song-name').textContent    = trackName || '';
-  $('host-progress-text').textContent = `${state.played.length} artista${state.played.length!==1?'s':''} sonado${state.played.length!==1?'s':''}`;
-  const pct = state.artists.length > 0 ? Math.round(state.played.length/state.artists.length*100) : 0;
-  $('host-progress-bar').style.width = `${pct}%`;
-  $('played-count').textContent = state.played.length;
-  const pl = $('played-list');
-  pl.innerHTML = [...state.played].reverse().map(a=>`<span class="played-badge">🎵 ${escHtml(a)}</span>`).join('');
-  if(state.cards.length) renderCards();
-}
-
-// ============================================================
-// MANUAL HOST NEXT (fallback)
-// ============================================================
-function hostNextManual(){
-  if(!state.artists.length){
-    showMsg('step1-msg','⚠️ Carga los artistas primero.','warn');
-    $('step1-msg').scrollIntoView({behavior:'smooth',block:'center'});
-    return;
-  }
-  // Build a shuffle order from unplayed artists
-  const unplayed = state.artists.filter(a => !state.played.some(p=>p.toLowerCase()===a.toLowerCase()));
-  if(!unplayed.length){
-    $('host-current-name').textContent='🎉 FIN';
-    $('host-progress-text').textContent='Todos los artistas han sonado';
-    return;
-  }
-  const pick = unplayed[Math.floor(Math.random()*unplayed.length)];
-  addPlayedArtist(pick, '');
-}
-
-function hostReset(){
-  if(!confirm('¿Resetear sesión? Se borrará el historial de artistas sonados.')) return;
-  state.played = []; state.lastTrackId = null;
-  $('host-current-name').textContent = '—';
-  $('host-song-name').textContent = '';
-  $('host-progress-text').textContent = 'Sin iniciar';
-  $('host-progress-bar').style.width = '0%';
-  $('played-count').textContent = '0';
-  $('played-list').innerHTML = '<span class="text-xs text-slate-600">Ninguno aún…</span>';
-  if(state.cards.length) renderCards();
-}
-
-function updateHostPanel(){
-  $('played-count').textContent = state.played.length;
-  const pl = $('played-list');
-  if(!state.played.length){ pl.innerHTML='<span class="text-xs text-slate-600">Ninguno aún…</span>'; return; }
-  pl.innerHTML = [...state.played].reverse().map(a=>`<span class="played-badge">🎵 ${escHtml(a)}</span>`).join('');
-  if(state.played.length > 0){
-    const last = state.played[state.played.length-1];
-    $('host-current-name').textContent = last;
-    $('host-progress-text').textContent = `${state.played.length} artista${state.played.length!==1?'s':''} sonado${state.played.length!==1?'s':''}`;
-    const pct = state.artists.length>0 ? Math.round(state.played.length/state.artists.length*100) : 0;
-    $('host-progress-bar').style.width = `${pct}%`;
+function activateStep(n){
+  S.currentStep = n;
+  for(let i=1;i<=4;i++){
+    if(i<n) setStep(i,'done');
+    else if(i===n) setStep(i,'active');
+    else setStep(i,'locked');
   }
 }
 
-// ============================================================
-// URL / EMBED
-// ============================================================
-function extractPlaylistId(url){
-  const m=url.match(/open\.spotify\.com\/(?:embed\/)?playlist\/([A-Za-z0-9]+)/);
-  return m?m[1]:null;
-}
-function onUrlInput(){
-  const url=$('playlist-url').value.trim();
-  $('playlist-url').classList.remove('input-error','input-ok');
-  hideMsg('url-msg');
-  if(!url) return;
-  if(extractPlaylistId(url)) $('playlist-url').classList.add('input-ok');
-  else if(url.length>15){ $('playlist-url').classList.add('input-error'); showMsg('url-msg','⚠️ No parece una URL válida de playlist de Spotify.','warn'); }
-}
-function applyUrl(){
-  const url=$('playlist-url').value.trim();
-  hideMsg('url-msg');
-  if(!url){ showMsg('url-msg','⚠️ Escribe una URL de playlist primero.','warn'); return; }
-  const id=extractPlaylistId(url);
-  if(!id){ $('playlist-url').classList.add('input-error'); showMsg('url-msg','❌ URL inválida. Formato: https://open.spotify.com/playlist/XXXXXXX<br><span style="opacity:0.7">En Spotify: ··· → Compartir → Copiar enlace de la playlist</span>','error'); return; }
-  state.playlistUrl=url;
-  $('playlist-url').classList.remove('input-error'); $('playlist-url').classList.add('input-ok');
-  renderEmbed(id);
-  showMsg('url-msg','✅ Player cargado. Ahora añade los artistas abajo.','ok');
-}
-function renderEmbed(id){
-  $('spotify-embed-container').innerHTML=
-    `<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/${id}?utm_source=generator&theme=0"
-      width="100%" height="200" frameBorder="0" allowfullscreen=""
-      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
-}
-
-// ============================================================
-// ARTISTS
-// ============================================================
-function onArtistsInput(){
-  const lines=$('manual-artists').value.split('\n');
-  const ne=lines.filter(l=>l.trim().length>0);
-  $('artist-counter').textContent=`${ne.length} línea${ne.length!==1?'s':''}`;
-  analyzeWarnings(lines);
-}
-function analyzeWarnings(lines){
-  const w=[];
-  lines.forEach((line,i)=>{
-    const t=line.trim(); if(!t)return;
-    if(t.length>60) w.push({n:i+1,t,r:'Texto muy largo — ¿copiaste algo de más?'});
-    else if(/^\d+[\.\-\)\s]\s*\S/.test(t)) w.push({n:i+1,t,r:'Parece que lleva número delante'});
-    else if(/^(featuring|feat\.?|ft\.?|prod\.? by|various|varios|desconocido|unknown)\b/i.test(t)) w.push({n:i+1,t,r:'Probablemente no es un artista'});
-    else if(/ [-–—] /.test(t)&&t.length>18) w.push({n:i+1,t,r:'¿Es "Artista — Canción"? Pon solo el artista'});
-  });
-  const box=$('artist-warnings');
-  if(!w.length){box.classList.add('hidden');return;}
-  box.classList.remove('hidden');
-  $('warning-lines').innerHTML=w.slice(0,8).map(x=>`<div class="warn-item"><strong>Línea ${x.n}:</strong> "${x.t.slice(0,55)}${x.t.length>55?'…':''}"<br><em style="opacity:0.8">${x.r}</em></div>`).join('')+(w.length>8?`<div class="warn-item">… y ${w.length-8} más.</div>`:'');
-}
-function loadArtists(){
-  hideMsg('step1-msg');
-  const lines=$('manual-artists').value.split('\n').map(normalize).filter(Boolean);
-  if(!lines.length){showMsg('step1-msg','⚠️ Escribe al menos un artista.','warn');return;}
-  const clean=lines.filter(l=>l.length<=80);
-  const skipped=lines.length-clean.length;
-  const artists=dedup(clean);
-  const dupes=clean.length-artists.length;
-  if(!artists.length){showMsg('step1-msg','❌ No se encontraron artistas válidos.','error');return;}
-  state.artists=artists;
-  renderPool();
-  let msg=`✅ <strong>${artists.length} artista${artists.length!==1?'s':''}</strong> cargado${artists.length!==1?'s':''}.`;
-  if(dupes>0) msg+=` ${dupes} duplicado${dupes!==1?'s':''} eliminado${dupes!==1?'s':''}.`;
-  if(skipped>0) msg+=` ${skipped} línea${skipped!==1?'s':''} demasiado larga${skipped!==1?'s':''} ignorada${skipped!==1?'s':''}.`;
-  if(artists.length<6) msg+=`<br>⚠️ Necesitas al menos <strong>6 artistas</strong> para generar cartones.`;
-  showMsg('step1-msg',msg,artists.length>=6?'ok':'warn');
-}
-function renderPool(){
-  $('pool-preview').classList.remove('hidden');
-  $('pool-count').textContent=state.artists.length;
-  $('pool-tags').innerHTML=state.artists.map(a=>`<span class="pool-tag">${escHtml(a)}</span>`).join('');
-}
-function clearAll(){
-  if(!confirm('¿Limpiar artistas y cartones?'))return;
-  state.artists=[];state.cards=[];state.played=[];state.lastTrackId=null;
-  $('pool-preview').classList.add('hidden');$('cards-section').classList.add('hidden');
-  $('manual-artists').value='';$('artist-counter').textContent='0 líneas';
-  $('artist-warnings').classList.add('hidden');
-  hideMsg('step1-msg');hideMsg('step2-msg');
-  hostReset();
-}
-
-// ============================================================
-// EXPORTIFY CSV
-// ============================================================
-function importExportifyCSV(ev){
-  const file=ev.target.files[0]; ev.target.value=''; if(!file)return;
-  if(!file.name.endsWith('.csv')){showMsg('csv-msg','❌ El archivo debe ser un .csv de exportify.net.','error');return;}
+// ══════════════════════════════════════
+// CSV IMPORT
+// ══════════════════════════════════════
+function importCSV(ev){
+  const file=ev.target.files[0]; ev.target.value=''; if(!file) return;
+  if(!file.name.toLowerCase().endsWith('.csv')){
+    showMsg('csv-msg','❌ El archivo debe ser un .csv descargado desde exportify.net.','error'); return;
+  }
   const reader=new FileReader();
   reader.onerror=()=>showMsg('csv-msg','❌ No se pudo leer el archivo.','error');
   reader.onload=e=>{
     try{
       const lines=e.target.result.split('\n');
-      if(!lines.length){showMsg('csv-msg','❌ El archivo está vacío.','error');return;}
-      const header=parseCSVLine(lines[0]);
+      if(lines.length<2){showMsg('csv-msg','❌ El archivo parece estar vacío.','error');return;}
+
+      const header=parseCSV(lines[0]);
       const candidates=['artist name(s)','artist names','artists','artist'];
       let col=-1;
       header.forEach((h,i)=>{if(col===-1&&candidates.includes(h.toLowerCase().trim()))col=i;});
+
       if(col===-1){
-        showMsg('csv-msg',`❌ No se encontró la columna de artistas.<br><span style="opacity:0.75">Columnas detectadas: <em>${header.slice(0,8).map(h=>'"'+h.trim()+'"').join(', ')}</em></span>`,'error');return;
+        showMsg('csv-msg',
+          `❌ No se encontró la columna de artistas.<br>`+
+          `<span style="opacity:0.75">Columnas detectadas: ${header.slice(0,6).map(h=>`"${h.trim()}"`).join(', ')}<br>`+
+          `Asegúrate de que el archivo viene de exportify.net.</span>`,'error');
+        return;
       }
+
       const raw=[];
       for(let i=1;i<lines.length;i++){
-        const l=lines[i].trim();if(!l)continue;
-        const cols=parseCSVLine(l);
-        const cell=(cols[col]||'').trim();if(!cell)continue;
-        cell.split(/\s*,\s*/).forEach(a=>{const n=normalize(a);if(n)raw.push(n);});
+        const l=lines[i].trim(); if(!l) continue;
+        const cols=parseCSV(l);
+        const cell=norm(cols[col]||''); if(!cell) continue;
+        // Split ONLY on ";" — Exportify uses semicolons between multiple artists
+        // "&" is kept as-is (part of artistic name e.g. "Simon & Garfunkel")
+        cell.split(/\s*;\s*/).forEach(a=>{const n=norm(a);if(n)raw.push(n);});
       }
-      if(!raw.length){showMsg('csv-msg','⚠️ No se encontraron artistas en el CSV.','warn');return;}
+
+      if(!raw.length){showMsg('csv-msg','⚠️ No se encontraron artistas. ¿Es el archivo de exportify.net?','warn');return;}
+
       const artists=dedup(raw);
       const dupes=raw.length-artists.length;
-      $('manual-artists').value=artists.join('\n');
-      onArtistsInput();
-      let msg=`✅ CSV leído: <strong>${artists.length} artistas únicos</strong> de ${lines.length-1} canciones.`;
-      if(dupes>0)msg+=` (${dupes} duplicado${dupes!==1?'s':''} eliminado${dupes!==1?'s':''})`;
-      msg+=`<br><span style="opacity:0.8">Revisa y pulsa <strong>"Confirmar artistas ✅"</strong>.</span>`;
+      S.artists=[...artists];
+      renderChips();
+
+      let msg=`✅ <strong>${artists.length} artistas únicos</strong> extraídos de ${lines.length-1} canciones.`;
+      if(dupes>0) msg+=` (${dupes} duplicado${dupes!==1?'s':''} eliminado${dupes!==1?'s':''})`;
       showMsg('csv-msg',msg,'ok');
-    }catch(err){showMsg('csv-msg',`❌ Error: ${err.message}`,'error');}
+
+      // Move to step 2
+      activateStep(2);
+
+    }catch(err){showMsg('csv-msg',`❌ Error al procesar el CSV: ${err.message}`,'error');}
   };
   reader.readAsText(file,'UTF-8');
 }
-function parseCSVLine(line){
+
+function parseCSV(line){
   const r=[];let cur='',inQ=false;
   for(let i=0;i<line.length;i++){
     const ch=line[i];
@@ -740,137 +546,320 @@ function parseCSVLine(line){
   r.push(cur);return r;
 }
 
-// ============================================================
-// GENERATE CARDS
-// ============================================================
-function generateCards(){
-  hideMsg('step2-msg');
-  if(!state.artists.length){showMsg('step2-msg','⚠️ Carga los artistas primero (Paso 1).','warn');return;}
-  if(state.artists.length<6){showMsg('step2-msg',`⚠️ Necesitas al menos 6 artistas. Tienes ${state.artists.length}.`,'warn');return;}
-  const n=parseInt($('num-cards').value)||0;
-  if(n<1){showMsg('step2-msg','⚠️ Introduce al menos 1 cartón.','warn');return;}
-  if(n>200){showMsg('step2-msg','⚠️ Máximo 200 cartones.','warn');return;}
-  state.cards=[];
-  for(let i=0;i<n;i++) state.cards.push({id:i+1,artists:shuffle([...state.artists]).slice(0,6)});
-  renderCards();
-  let msg=`✅ <strong>${n} cartón${n!==1?'es':''}</strong> generado${n!==1?'s':''}.`;
-  if(state.artists.length<12)msg+=' ⚠️ Con pocos artistas habrá bastante coincidencia entre cartones.';
-  showMsg('step2-msg',msg,'ok');
-}
-function renderCards(){
-  $('cards-section').classList.remove('hidden');
-  $('cards-container').innerHTML=state.cards.map(card=>{
-    const cells=card.artists.map(a=>{
-      const hit=state.played.some(p=>p.toLowerCase()===a.toLowerCase());
-      return `<div class="bingo-cell ${hit?'marked':''}">${escHtml(a)}</div>`;
-    }).join('');
-    return `<div class="bingo-card">
-      <div class="flex items-center justify-between mb-3">
-        <span style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--neon)">🎴 Cartón #${card.id}</span>
-        <span class="text-xs text-slate-500">6 artistas</span>
-      </div>
-      <div class="grid grid-cols-3 gap-2">${cells}</div>
-    </div>`;
-  }).join('');
+// ══════════════════════════════════════
+// POOL CHIPS
+// ══════════════════════════════════════
+function renderChips(){
+  $('pool-count').textContent=S.artists.length;
+  const w=$('chips-wrap');
+  if(!S.artists.length){
+    w.innerHTML='<span style="font-size:0.81rem;color:#1e293b;font-style:italic;">Pool vacío</span>';
+    return;
+  }
+  w.innerHTML=S.artists.map((a,i)=>
+    `<span class="chip">${esc(a)}<button class="chip-x" onclick="removeArtist(${i})" title="Eliminar">✕</button></span>`
+  ).join('');
 }
 
-// ============================================================
-// PDF
-// ============================================================
-async function downloadPDF(){
-  if(!state.cards.length){showMsg('step2-msg','⚠️ Genera los cartones primero.','warn');return;}
-  if(typeof window.jspdf==='undefined'){alert('❌ No se pudo cargar jsPDF. Comprueba tu conexión.');return;}
-  const{jsPDF}=window.jspdf;
+function removeArtist(idx){
+  S.artists.splice(idx,1);
+  renderChips();
+  if(S.artists.length<6){
+    showMsg('pool-msg',`⚠️ Necesitas al menos 6 artistas. Tienes ${S.artists.length}.`,'warn');
+  } else hideMsg('pool-msg');
+}
+
+function clearPool(){
+  if(!confirm('¿Eliminar todos los artistas del pool?'))return;
+  S.artists=[];renderChips();
+  showMsg('pool-msg','Pool vacío. Vuelve atrás e importa el CSV de nuevo.','warn');
+}
+
+function confirmPool(){
+  hideMsg('pool-msg');
+  if(S.artists.length<6){
+    showMsg('pool-msg',`⚠️ Necesitas al menos <strong>6 artistas</strong> para generar cartones. Tienes ${S.artists.length}.`,'warn');
+    return;
+  }
+  // Update summary badge on step header
+  $('ss2').textContent=`${S.artists.length} artistas`;
+  $('ss2').classList.remove('hidden');
+  activateStep(3);
+}
+
+// ══════════════════════════════════════
+// PLAYERS STEP
+// ══════════════════════════════════════
+function confirmPlayers(){
+  hideMsg('players-msg');
+  const n=parseInt($('num-players').value)||0;
+  if(n<1){showMsg('players-msg','⚠️ Introduce al menos 1 jugador.','warn');return;}
+  if(n>200){showMsg('players-msg','⚠️ Máximo 200 cartones por partida.','warn');return;}
+  S.numPlayers=n;
+  $('ss3').textContent=`${n} jugador${n!==1?'es':''}`;
+  $('ss3').classList.remove('hidden');
+  activateStep(4);
+}
+
+// ══════════════════════════════════════
+// GENERATE PDF
+// ══════════════════════════════════════
+function generatePDF(){
+  hideMsg('generate-msg');
+  if(S.artists.length<6){showMsg('generate-msg','⚠️ Vuelve al paso 2 y asegúrate de tener al menos 6 artistas.','warn');return;}
+  if(typeof window.jspdf==='undefined'){showMsg('generate-msg','❌ No se pudo cargar la librería PDF. Comprueba tu conexión.','error');return;}
+
+  const n=S.numPlayers;
+  S.cards=[];
+  for(let i=0;i<n;i++) S.cards.push({id:i+1,artists:shuffle([...S.artists]).slice(0,6)});
+
+  const {jsPDF}=window.jspdf;
   const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-  const pageW=210,pageH=297,mX=10,mY=12,cols=2,rows=3;
-  const cardW=(pageW-mX*(cols+1))/cols,cardH=(pageH-mY*(rows+1))/rows;
-  let col=0,row=0;
-  state.cards.forEach((card,i)=>{
-    if(i>0&&i%(cols*rows)===0){doc.addPage();col=0;row=0;}
-    const x=mX+col*(cardW+mX),y=mY+row*(cardH+mY);
-    doc.setFillColor(22,26,48);doc.roundedRect(x,y,cardW,cardH,3,3,'F');
-    doc.setDrawColor(240,255,68);doc.setLineWidth(0.5);doc.roundedRect(x,y,cardW,cardH,3,3,'S');
-    doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.setTextColor(240,255,68);
-    doc.text(`BINGO MUSICAL  ·  Carton #${card.id}`,x+cardW/2,y+7,{align:'center'});
-    const gX=x+3,gY=y+11,cW=(cardW-6)/3,cH=(cardH-15)/2;
+  const W=210,H=297,mX=12,mY=10;
+  const cW=W-mX*2, cH=(H-mY*3)/2;
+
+  S.cards.forEach((card,i)=>{
+    if(i>0&&i%2===0) doc.addPage();
+    const row=i%2, x=mX, y=mY+row*(cH+mY);
+
+    // background
+    doc.setFillColor(15,18,32);
+    doc.roundedRect(x,y,cW,cH,4,4,'F');
+    // border
+    doc.setDrawColor(240,255,68);doc.setLineWidth(0.6);
+    doc.roundedRect(x,y,cW,cH,4,4,'S');
+    // header
+    doc.setFont('helvetica','bold');doc.setFontSize(13);doc.setTextColor(240,255,68);
+    doc.text('🎶 BINGO MUSICAL',x+cW/2,y+10,{align:'center'});
+    doc.setFontSize(9);doc.setTextColor(100,116,139);
+    doc.text(`Cartón #${card.id}`,x+cW/2,y+17,{align:'center'});
+    // separator
+    doc.setDrawColor(35,42,68);doc.setLineWidth(0.25);
+    doc.line(x+8,y+21,x+cW-8,y+21);
+    // grid 3×2
+    const gX=x+8,gY=y+24,cellW=(cW-16)/3,cellH=(cH-30)/2;
     card.artists.forEach((artist,ai)=>{
-      const cr=Math.floor(ai/3),cc=ai%3,cx=gX+cc*cW,cy=gY+cr*cH;
-      doc.setFillColor(30,34,64);doc.setDrawColor(70,80,120);doc.setLineWidth(0.25);
-      doc.roundedRect(cx,cy,cW-1,cH-1,1.5,1.5,'FD');
-      doc.setFontSize(7.5);doc.setTextColor(220,230,245);doc.setFont('helvetica','bold');
-      doc.text(doc.splitTextToSize(artist,cW-4),cx+cW/2,cy+cH/2,{align:'center',baseline:'middle'});
+      const cr=Math.floor(ai/3),cc=ai%3,cx=gX+cc*cellW,cy=gY+cr*cellH;
+      doc.setFillColor(22,27,50);doc.setDrawColor(45,55,90);doc.setLineWidth(0.2);
+      doc.roundedRect(cx+1,cy+1,cellW-2,cellH-2,2,2,'FD');
+      doc.setFontSize(8);doc.setTextColor(215,225,240);doc.setFont('helvetica','bold');
+      const ls=doc.splitTextToSize(artist,cellW-6);
+      doc.text(ls,cx+cellW/2,cy+cellH/2,{align:'center',baseline:'middle'});
     });
-    col++;if(col>=cols){col=0;row++;}
+    // cut line between cards on same page
+    if(row===0&&i<S.cards.length-1){
+      doc.setDrawColor(160,170,180);doc.setLineWidth(0.18);
+      doc.setLineDashPattern([2,2],0);
+      doc.line(x,y+cH+mY/2,x+cW,y+cH+mY/2);
+      doc.setLineDashPattern([],0);
+      doc.setFontSize(5.5);doc.setTextColor(140,150,160);
+      doc.text('✂  Cortar aquí',x+cW/2,y+cH+mY/2+2,{align:'center'});
+    }
   });
+
   doc.save('bingo-musical-cartones.pdf');
+  showMsg('generate-msg',
+    `✅ PDF descargado con <strong>${n} cartón${n!==1?'es':''}</strong> (${Math.ceil(n/2)} hoja${Math.ceil(n/2)!==1?'s':''} A4). ¡Imprímelos y repártelos!`,
+    'ok');
 }
 
-// ============================================================
-// EXPORT / IMPORT SESSION
-// ============================================================
-function exportSession(){
-  if(!state.artists.length&&!state.cards.length){alert('⚠️ No hay nada que exportar.');return;}
-  const blob=new Blob([JSON.stringify({
-    version:3,exportedAt:new Date().toISOString(),
-    playlistUrl:state.playlistUrl,artists:state.artists,
-    cards:state.cards,played:state.played,
-  },null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=`bingo-musical-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
+// ══════════════════════════════════════
+// SPOTIFY OAUTH PKCE
+// ══════════════════════════════════════
+async function genVerifier(len=128){
+  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+  const arr=new Uint8Array(len);crypto.getRandomValues(arr);
+  return Array.from(arr,b=>chars[b%chars.length]).join('');
 }
-function importSession(ev){
-  const file=ev.target.files[0];if(!file)return;
-  if(!file.name.endsWith('.json')){alert('❌ Solo archivos .json exportados por esta app.');ev.target.value='';return;}
-  const reader=new FileReader();
-  reader.onload=e=>{
-    try{
-      const d=JSON.parse(e.target.result);
-      if(!d.version||!Array.isArray(d.artists))throw new Error('No es una sesión válida.');
-      state.playlistUrl=d.playlistUrl||'';
-      state.artists=d.artists||[];
-      state.cards=d.cards||[];
-      state.played=d.played||[];
-      if(state.artists.length){
-        renderPool();
-        $('manual-artists').value=state.artists.join('\n');
-        $('artist-counter').textContent=`${state.artists.length} líneas`;
-      }
-      if(state.cards.length)renderCards();
-      updateHostPanel();
-      if(state.playlistUrl){
-        $('playlist-url').value=state.playlistUrl;
-        const id=extractPlaylistId(state.playlistUrl);
-        if(id){renderEmbed(id);$('playlist-url').classList.add('input-ok');}
-      }
-      alert(`✅ Sesión importada:\n· ${state.artists.length} artistas\n· ${state.cards.length} cartones\n· ${state.played.length} artistas sonados`);
-    }catch(err){alert(`❌ Error al importar: ${err.message}`);}
-  };
-  reader.onerror=()=>alert('❌ No se pudo leer el archivo.');
-  reader.readAsText(file);
-  ev.target.value='';
+async function genChallenge(v){
+  const enc=new TextEncoder().encode(v);
+  const dig=await crypto.subtle.digest('SHA-256',enc);
+  return btoa(String.fromCharCode(...new Uint8Array(dig))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 }
 
-// ============================================================
-// PRINT
-// ============================================================
+async function spotifyLogin(){
+  const v=await genVerifier();
+  const c=await genChallenge(v);
+  sessionStorage.setItem('pkce_v',v);
+  const p=new URLSearchParams({
+    client_id:CLIENT_ID,response_type:'code',
+    redirect_uri:REDIRECT,scope:SCOPES,
+    code_challenge_method:'S256',code_challenge:c,
+  });
+  window.location='https://accounts.spotify.com/authorize?'+p.toString();
+}
+
+async function handleCallback(){
+  const p=new URLSearchParams(window.location.search);
+  const code=p.get('code'),error=p.get('error');
+  if(error){window.history.replaceState({},'',window.location.pathname);return;}
+  if(!code)return;
+  const v=sessionStorage.getItem('pkce_v');
+  window.history.replaceState({},'',window.location.pathname);
+  if(!v)return;
+  try{
+    const res=await fetch('https://accounts.spotify.com/api/token',{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:new URLSearchParams({
+        client_id:CLIENT_ID,grant_type:'authorization_code',
+        code,redirect_uri:REDIRECT,code_verifier:v,
+      })
+    });
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error_description||data.error||`HTTP ${res.status}`);
+    sessionStorage.removeItem('pkce_v');
+    S.token=data.access_token;
+    onConnected();
+  }catch(err){
+    goTo('phase2');
+    alert(`❌ Error conectando con Spotify: ${err.message}\nIntenta de nuevo.`);
+  }
+}
+
+function onConnected(){
+  goTo('phase2');
+  $('connect-card').classList.add('hidden');
+  $('connected-state').classList.remove('hidden');
+  startPolling();
+}
+
+function spotifyDisconnect(){
+  S.token=null;S.lastTrackId=null;
+  if(S.pollTimer){clearInterval(S.pollTimer);S.pollTimer=null;}
+  $('connected-state').classList.add('hidden');
+  $('connect-card').classList.remove('hidden');
+}
+
+function toggleFallback(){
+  $('token-fallback-box').classList.toggle('hidden');
+}
+
+function useManualToken(){
+  const t=$('manual-token').value.trim();
+  if(!t){alert('Pega un token válido primero.');return;}
+  S.token=t;
+  onConnected();
+}
+
+// ══════════════════════════════════════
+// POLLING
+// ══════════════════════════════════════
+function startPolling(){
+  if(S.pollTimer)clearInterval(S.pollTimer);
+  pollNow();
+  S.pollTimer=setInterval(pollNow,5000);
+}
+
+async function pollNow(){
+  if(!S.token)return;
+  try{
+    const res=await fetch('https://api.spotify.com/v1/me/player/currently-playing',{
+      headers:{Authorization:`Bearer ${S.token}`}
+    });
+    if(res.status===204){$('np-status').textContent='Nada sonando — dale al play en Spotify 🎵';return;}
+    if(res.status===401){spotifyDisconnect();alert('La sesión de Spotify ha expirado. Vuelve a conectar.');return;}
+    if(!res.ok)return;
+    const data=await res.json();
+    if(!data.item||!data.is_playing){$('np-status').textContent='Música en pausa — dale al play en Spotify';return;}
+
+    const tid=data.item.id;
+    const tname=data.item.name;
+    const spArtists=data.item.artists.map(a=>a.name);
+
+    $('np-status').textContent=`Detectado: ${spArtists.join(' & ')} — ${tname}`;
+    if(tid===S.lastTrackId)return;
+    S.lastTrackId=tid;
+
+    const matched=matchArtist(spArtists);
+    if(matched) addPlayed(matched,tname);
+    else $('np-status').textContent=`${spArtists.join(' & ')} — no está en el pool de esta partida`;
+
+  }catch(e){}
+}
+
+function matchArtist(spArtists){
+  // Exact match first
+  for(const sa of spArtists){
+    const n=norm(sa).toLowerCase();
+    const found=S.artists.find(a=>norm(a).toLowerCase()===n);
+    if(found)return found;
+  }
+  // Partial match
+  for(const sa of spArtists){
+    const n=norm(sa).toLowerCase();
+    const found=S.artists.find(a=>{
+      const an=norm(a).toLowerCase();
+      return n.includes(an)||an.includes(n);
+    });
+    if(found)return found;
+  }
+  return null;
+}
+
+function addPlayed(artist,track){
+  if(S.played.some(p=>norm(p).toLowerCase()===norm(artist).toLowerCase()))return;
+  S.played.push(artist);
+  $('np-artist').textContent=artist;
+  $('np-track').textContent=track||'';
+  const total=S.artists.length;
+  const pct=total>0?Math.round(S.played.length/total*100):0;
+  $('np-prog').style.width=`${pct}%`;
+  $('np-status').textContent=`✓ Registrado — ${S.played.length} de ${total} artista${total!==1?'s':''} sonado${total!==1?'s':''}`;
+  $('played-count').textContent=S.played.length;
+  $('played-list').innerHTML=[...S.played].reverse()
+    .map(a=>`<span class="played-chip">🎵 ${esc(a)}</span>`).join('');
+}
+
+// ══════════════════════════════════════
+// MANUAL CONTROLS
+// ══════════════════════════════════════
+function manualNext(){
+  if(!S.artists.length){
+    // If no pool loaded, use played list length as proxy
+    alert('No hay artistas cargados. Genera la partida primero en "Generar partida".');return;
+  }
+  const unplayed=S.artists.filter(a=>!S.played.some(p=>norm(p).toLowerCase()===norm(a).toLowerCase()));
+  if(!unplayed.length){$('np-artist').textContent='🎉 FIN';$('np-track').textContent='';$('np-status').textContent='Todos los artistas han sonado';return;}
+  const pick=unplayed[Math.floor(Math.random()*unplayed.length)];
+  addPlayed(pick,'avance manual');
+}
+
+function resetSession(){
+  if(!confirm('¿Resetear? Se borrará el historial de artistas sonados.'))return;
+  S.played=[];S.lastTrackId=null;
+  $('np-artist').textContent='—';$('np-track').textContent='';
+  $('np-prog').style.width='0%';
+  $('np-status').textContent='Esperando reproducción en Spotify…';
+  $('played-count').textContent='0';
+  $('played-list').innerHTML='<span style="font-size:0.81rem;color:#1e293b;font-style:italic;">Ninguno aún… pon música en Spotify 🎵</span>';
+}
+
+// ══════════════════════════════════════
+// PRINT FALLBACK
+// ══════════════════════════════════════
 window.onbeforeprint=function(){
+  if(!S.cards.length)return;
   $('print-zone').innerHTML=`<style>
-    @page{margin:10mm}body{background:#fff;font-family:Arial,sans-serif}
-    .pc{border:2px solid #333;border-radius:6px;padding:10px;margin:8px;display:inline-block;width:44%;vertical-align:top;break-inside:avoid}
-    .pt{font-size:12px;font-weight:bold;text-align:center;margin-bottom:6px}
-    .pg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
-    .pce{border:1px solid #999;border-radius:4px;padding:7px 4px;text-align:center;font-size:9px;font-weight:700;min-height:38px;display:flex;align-items:center;justify-content:center}
-  </style>`+state.cards.map(c=>`<div class="pc"><div class="pt">🎶 BINGO MUSICAL · Cartón #${c.id}</div><div class="pg">${c.artists.map(a=>`<div class="pce">${escHtml(a)}</div>`).join('')}</div></div>`).join('');
+    @page{margin:8mm}body{background:#fff;font-family:Arial,sans-serif}
+    .pc{border:2px solid #222;border-radius:5px;padding:12px;margin-bottom:8mm;break-inside:avoid}
+    .pt{font-size:13px;font-weight:bold;text-align:center;margin-bottom:8px}
+    .pg{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+    .pce{border:1px solid #bbb;border-radius:4px;padding:8px 4px;text-align:center;font-size:9px;font-weight:700;min-height:42px;display:flex;align-items:center;justify-content:center}
+    .cut{border-top:1px dashed #ccc;text-align:center;font-size:7px;color:#bbb;padding:3px 0;margin:3mm 0}
+  </style>`+S.cards.map((c,i)=>
+    `${i>0&&i%2===0?'<div style="page-break-before:always"></div>':''}`+
+    `<div class="pc"><div class="pt">🎶 BINGO MUSICAL · Cartón #${c.id}</div>`+
+    `<div class="pg">${c.artists.map(a=>`<div class="pce">${esc(a)}</div>`).join('')}</div></div>`+
+    `${i%2===0&&i<S.cards.length-1?'<div class="cut">✂ Cortar aquí</div>':''}`
+  ).join('');
 };
-window.onafterprint=function(){$('print-zone').innerHTML='';};
+window.onafterprint=()=>{$('print-zone').innerHTML='';};
 
-// ============================================================
-// INIT — handle OAuth callback on page load
-// ============================================================
-handleOAuthCallback();
-updateHostPanel();
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+handleCallback();
 </script>
 </body>
 </html>
