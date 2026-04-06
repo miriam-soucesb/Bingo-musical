@@ -6,7 +6,7 @@
 <title>🎶 Bingo Musical</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Limelight&family=Plaster&family=Montserrat:wght@700;900&family=Alfa+Slab+One&display=swap" rel="stylesheet"/>
 <style>
 :root{
   --neon:#f0ff44; --hot:#ff3c6e; --cool:#00e5ff; --green:#1ed760;
@@ -22,6 +22,11 @@ body{
     radial-gradient(ellipse 50% 40% at 90% 100%,rgba(255,60,110,0.07) 0%,transparent 55%);
 }
 
+/* ── OPTION PICKERS ── */
+.opt-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;}
+.opt-btn{padding:8px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#94a3b8;cursor:pointer;font-family:"DM Sans",sans-serif;font-size:0.82rem;font-weight:500;transition:all 0.15s;}
+.opt-btn:hover{border-color:rgba(240,255,68,0.3);color:#e2e8f0;}
+.opt-btn.sel{border-color:var(--neon);background:rgba(240,255,68,0.1);color:var(--neon);}
 /* ── SCREENS ── */
 .screen{display:none;min-height:100vh;}
 .screen.active{display:flex;flex-direction:column;}
@@ -286,33 +291,79 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
           <span class="step-summary hidden" id="ss4"></span>
         </div>
         <div class="step-body">
-          <p class="step-desc">Dale tu toque personal a los cartones antes de generarlos.</p>
+          <p class="step-desc">Dale tu toque personal. La previsualización se actualiza en tiempo real.</p>
 
           <!-- Título -->
           <div style="margin-bottom:1.25rem;">
             <label class="lbl">Título de la partida</label>
-            <input type="text" id="custom-title" placeholder="BINGO MUSICAL" maxlength="40"
-              oninput="renderPreview()"
-              style="font-size:1rem;font-weight:600;letter-spacing:0.03em;"/>
-            <p style="font-size:0.74rem;color:#334155;margin-top:4px;">Aparecerá en grande en todos los cartones. Si lo dejas vacío se usará "BINGO MUSICAL".</p>
+            <input type="text" id="custom-title" placeholder="Bingo Musical" maxlength="40" oninput="renderPreview()"/>
+            <p style="font-size:0.73rem;color:#334155;margin-top:4px;">Se respetan mayúsculas y minúsculas tal como lo escribas.</p>
           </div>
 
           <!-- Paleta -->
-          <label class="lbl">Paleta de colores</label>
-          <p class="step-desc" style="margin-bottom:0.75rem;">Elige el estilo visual de tus cartones.</p>
-          <div id="palette-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.25rem;"></div>
+          <div style="margin-bottom:1.25rem;">
+            <label class="lbl">Paleta de colores</label>
+            <div id="palette-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
+          </div>
 
-          <!-- CARD PREVIEW -->
-          <label class="lbl">Previsualización del cartón</label>
-          <div id="card-preview" style="
-            border-radius:14px;overflow:hidden;margin-bottom:1rem;
-            border:1px solid rgba(255,255,255,0.08);
-          ">
+          <!-- Tipografía -->
+          <div style="margin-bottom:1.25rem;">
+            <label class="lbl">Tipografía</label>
+            <div class="opt-row" id="font-opts">
+              <button class="opt-btn sel" onclick="selectFont('Limelight','Limelight',this)">Limelight</button>
+              <button class="opt-btn" onclick="selectFont('Plaster','Plaster',this)">Plaster</button>
+              <button class="opt-btn" onclick="selectFont('Montserrat','Montserrat',this)">Montserrat</button>
+              <button class="opt-btn" onclick="selectFont('Alfa Slab One','Alfa Slab One',this)">Alfa Slab One</button>
+            </div>
+          </div>
+
+          <!-- Tipografía artistas distinta -->
+          <div style="margin-bottom:1.25rem;">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+              <input type="checkbox" id="diff-font" onchange="renderPreview()"
+                style="width:16px;height:16px;accent-color:var(--neon);cursor:pointer;flex-shrink:0;"/>
+              <span style="font-size:0.84rem;color:#94a3b8;">Usar tipografía distinta para los artistas <span style="color:#64748b;">(Verdana)</span></span>
+            </label>
+          </div>
+
+          <!-- Tamaño artistas -->
+          <div style="margin-bottom:1.25rem;">
+            <label class="lbl">Tamaño de los artistas</label>
+            <div class="opt-row">
+              <button class="opt-btn" onclick="selectSize('s',this)">Pequeño</button>
+              <button class="opt-btn sel" onclick="selectSize('m',this)">Mediano</button>
+              <button class="opt-btn" onclick="selectSize('l',this)">Grande</button>
+            </div>
+          </div>
+
+          <!-- Posición nombre -->
+          <div style="margin-bottom:1.25rem;">
+            <label class="lbl">Recuadro "Propiedad de..."</label>
+            <div class="opt-row">
+              <button class="opt-btn sel" onclick="selectNamePos('top',this)">Arriba</button>
+              <button class="opt-btn" onclick="selectNamePos('bottom',this)">Abajo</button>
+              <button class="opt-btn" onclick="selectNamePos('none',this)">Sin recuadro</button>
+            </div>
+          </div>
+
+          <!-- Fondo -->
+          <div style="margin-bottom:1.25rem;">
+            <label class="lbl">Fondo del cartón</label>
+            <div class="opt-row">
+              <button class="opt-btn sel" onclick="selectBg('solid',this)">Liso</button>
+              <button class="opt-btn" onclick="selectBg('dots',this)">Polka dots</button>
+              <button class="opt-btn" onclick="selectBg('stripes',this)">Rayas verticales</button>
+              <button class="opt-btn" onclick="selectBg('waves',this)">Marco de ondas</button>
+            </div>
+          </div>
+
+          <!-- Preview -->
+          <label class="lbl">Previsualización</label>
+          <div style="border-radius:14px;overflow:hidden;margin-bottom:1rem;border:1px solid rgba(255,255,255,0.08);">
             <canvas id="preview-canvas" style="width:100%;display:block;border-radius:14px;"></canvas>
           </div>
 
           <div id="custom-msg" class="hidden"></div>
-
           <div class="btn-row">
             <button class="btn btn-ghost" onclick="jumpTo(3)">← Atrás</button>
             <button class="btn btn-neon" onclick="confirmCustom()">Confirmar →</button>
@@ -648,40 +699,78 @@ function confirmPlayers(){
 }
 
 // ══════════════════════════════════════
-// PALETTES
+// PALETTES — basadas en paletas Pantone
 // ══════════════════════════════════════
 const PALETTES = [
-  { id:'midnight', name:'Midnight',    bg:[10,12,28],   card:[20,24,52],   accent:[120,80,255], text:[220,210,255], border:[80,60,200],  label:'Morado noche'   },
-  { id:'neon',     name:'Neon Stage',  bg:[8,10,18],    card:[15,22,18],   accent:[0,255,120],  text:[200,255,220], border:[0,200,100],  label:'Verde neón'     },
-  { id:'sunset',   name:'Sunset',      bg:[28,10,8],    card:[50,20,12],   accent:[255,120,40], text:[255,220,180], border:[220,80,20],  label:'Naranja sunset' },
-  { id:'rose',     name:'Rose Gold',   bg:[25,12,18],   card:[48,20,32],   accent:[255,100,150],text:[255,200,215], border:[220,80,120], label:'Rosa dorado'    },
-  { id:'ocean',    name:'Deep Ocean',  bg:[6,16,30],    card:[12,28,52],   accent:[0,180,255],  text:[180,225,255], border:[0,140,220],  label:'Azul océano'    },
-  { id:'gold',     name:'Gold Club',   bg:[18,14,6],    card:[38,28,8],    accent:[255,200,40], text:[255,235,160], border:[200,160,20], label:'Dorado club'    },
-  { id:'minimal',  name:'Minimal B&W', bg:[245,245,245],card:[255,255,255],accent:[30,30,30],   text:[30,30,30],    border:[180,180,180],label:'Blanco minimal' },
-  { id:'forest',   name:'Forest',      bg:[8,18,10],    card:[14,32,16],   accent:[80,200,80],  text:[180,240,180], border:[50,160,60],  label:'Verde bosque'   },
+  // Fondos suaves
+  { id:'circe',     label:'Circe',           bg:[237,229,204], card:[240,233,210], cell1:[237,229,204], cell2:[197,139,126], text1:[45,83,92],  text2:[255,255,255], border:[197,139,126] },
+  { id:'demeter',   label:'Démeter',          bg:[248,240,238], card:[252,244,242], cell1:[248,240,238], cell2:[226,138,133], text1:[192,88,74],  text2:[255,255,255], border:[226,138,133] },
+  { id:'persefone', label:'Perséfone',        bg:[240,239,237], card:[244,243,241], cell1:[240,239,237], cell2:[4,71,75],    text1:[4,71,75],   text2:[240,239,237], border:[4,71,75]    },
+  { id:'iris',      label:'Iris',             bg:[245,240,242], card:[249,244,246], cell1:[237,222,224], cell2:[54,68,93],   text1:[54,68,93],  text2:[237,222,224], border:[54,68,93]   },
+  // Fondos oscuros
+  { id:'artemisa',  label:'Artemisa',         bg:[26,8,8],      card:[42,16,16],    cell1:[109,22,21],  cell2:[208,185,186], text1:[208,185,186],text2:[109,22,21],  border:[115,152,153]},
+  { id:'persnoche', label:'Perséfone noche',  bg:[2,24,32],     card:[4,46,48],     cell1:[4,71,75],    cell2:[228,152,30],  text1:[228,152,30], text2:[4,71,75],    border:[228,152,30] },
+  { id:'irisnoche', label:'Iris noche',       bg:[14,20,48],    card:[26,44,64],    cell1:[54,68,93],   cell2:[220,128,121], text1:[237,222,224],text2:[255,255,255], border:[220,128,121]},
+  { id:'circenoche',label:'Circe noche',      bg:[10,28,34],    card:[22,88,92],    cell1:[45,83,92],   cell2:[218,204,175], text1:[218,204,175],text2:[45,83,92],   border:[197,139,126]},
 ];
 let selectedPalette = PALETTES[0];
+
+// Custom options state
+let customFont     = 'Limelight';
+let customFontCSS  = 'Limelight';
+let customSize     = 'm';   // s | m | l
+let customNamePos  = 'top'; // top | bottom | none
+let customBg       = 'solid'; // solid | dots | stripes
+
+function selectFont(font, css, el){
+  customFont=font; customFontCSS=css;
+  document.querySelectorAll('#font-opts .opt-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  renderPreview();
+}
+function selectSize(sz, el){
+  customSize=sz;
+  el.closest('.opt-row').querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  renderPreview();
+}
+function selectNamePos(pos, el){
+  customNamePos=pos;
+  el.closest('.opt-row').querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  renderPreview();
+}
+function selectBg(bg, el){
+  customBg=bg;
+  el.closest('.opt-row').querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  renderPreview();
+}
 
 // Sample artists for preview
 const PREVIEW_ARTISTS = ['Rosalía','Bad Bunny','Daft Punk','The Weeknd','C. Tangana','Karol G'];
 
 function renderPaletteGrid(){
   const g=$('palette-grid');
-  g.innerHTML=PALETTES.map((p,i)=>`
-    <div onclick="selectPalette(${i})" id="pal-${p.id}" style="
-      cursor:pointer;border-radius:12px;overflow:hidden;
-      border:2px solid ${selectedPalette.id===p.id?'#f0ff44':'rgba(255,255,255,0.1)'};
-      transition:all 0.18s;aspect-ratio:3/2;
+  g.innerHTML=PALETTES.map((p,i)=>{
+    const sel=selectedPalette.id===p.id;
+    // Mini checkerboard preview
+    const c1=`rgb(${p.cell1.join(',')})`,c2=`rgb(${p.cell2.join(',')})`;
+    return `<div onclick="selectPalette(${i})" style="
+      cursor:pointer;border-radius:10px;padding:8px 6px;
+      border:2px solid ${sel?'#f0ff44':'rgba(255,255,255,0.08)'};
       background:rgb(${p.bg.join(',')});
-      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-      padding:6px;
-    ">
-      <div style="width:70%;height:6px;border-radius:3px;background:rgb(${p.accent.join(',')});opacity:0.9;"></div>
-      <div style="width:90%;height:3px;border-radius:2px;background:rgb(${p.text.join(',')});opacity:0.4;"></div>
-      <div style="width:90%;height:3px;border-radius:2px;background:rgb(${p.text.join(',')});opacity:0.25;"></div>
-      <p style="font-size:0.6rem;color:rgb(${p.text.join(',')});opacity:0.7;margin-top:3px;text-align:center;line-height:1.2;">${p.label}</p>
-    </div>
-  `).join('');
+      display:flex;flex-direction:column;align-items:center;gap:4px;
+      transition:all 0.18s;" id="pal-${p.id}">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;width:100%;border-radius:5px;overflow:hidden;">
+        <div style="background:${c1};height:16px;"></div>
+        <div style="background:${c2};height:16px;"></div>
+        <div style="background:${c2};height:16px;"></div>
+        <div style="background:${c1};height:16px;"></div>
+      </div>
+      <p style="font-size:0.6rem;color:rgb(${p.text1.join(',')});margin:0;text-align:center;line-height:1.2;opacity:0.85;">${p.label}</p>
+    </div>`;
+  }).join('');
   renderPreview();
 }
 
@@ -689,102 +778,172 @@ function selectPalette(idx){
   selectedPalette=PALETTES[idx];
   PALETTES.forEach(p=>{
     const el=$(`pal-${p.id}`);
-    if(el) el.style.borderColor=p.id===selectedPalette.id?'#f0ff44':'rgba(255,255,255,0.1)';
+    if(el) el.style.borderColor=p.id===selectedPalette.id?'#f0ff44':'rgba(255,255,255,0.08)';
   });
   renderPreview();
 }
 
 function renderPreview(){
-  const canvas = $('preview-canvas');
-  if(!canvas) return;
-  const pal = selectedPalette;
-  const title = ($('custom-title') && $('custom-title').value.trim()
-    ? $('custom-title').value.trim() : 'BINGO MUSICAL').toUpperCase();
+  const canvas=$('preview-canvas'); if(!canvas) return;
+  const pal=selectedPalette;
+  const rawTitle=$('custom-title')&&$('custom-title').value.trim();
+  const title=rawTitle||'Bingo Musical';
+  const W=600,H=430; canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  const r=a=>`rgb(${a.join(',')})`;
 
-  // Canvas size: A4 half-page ratio (210 x 148.5mm) → scale to fit width
-  const W = 600, H = 424; // ~A4 half proportions at screen resolution
-  canvas.width = W; canvas.height = H;
-  const ctx = canvas.getContext('2d');
+  // More generous margins
+  const mX=30, mY=20, cW=W-mX*2, cH=H-mY*2;
 
-  const r = a => `rgb(${a.join(',')})`;
-  const mX=16, mY=12, cW=W-mX*2, cH=H-mY*2;
+  // Card bg
+  ctx.fillStyle=r(pal.card);
+  rrect(ctx,mX,mY,cW,cH,14); ctx.fill();
 
-  // Card background
-  ctx.fillStyle = r(pal.card);
-  roundRect(ctx, mX, mY, cW, cH, 10);
-  ctx.fill();
+  // Background pattern (before border)
+  drawBgPattern(ctx,mX,mY,cW,cH,pal);
 
-  // Accent top bar
-  ctx.fillStyle = r(pal.accent);
-  roundRect(ctx, mX, mY, cW, 22, 10);
-  ctx.fill();
-  // flatten bottom of bar
-  ctx.fillRect(mX, mY+11, cW, 11);
+  // Card border / waves
+  if(customBg==='waves'){
+    drawWaveBorder(ctx,mX,mY,cW,cH,r(pal.cell2));
+  } else {
+    ctx.strokeStyle=r(pal.border); ctx.lineWidth=1.5;
+    rrect(ctx,mX,mY,cW,cH,14); ctx.stroke();
+  }
 
-  // Card border
-  ctx.strokeStyle = r(pal.border);
-  ctx.lineWidth = 1.5;
-  roundRect(ctx, mX, mY, cW, cH, 10);
-  ctx.stroke();
+  // Font
+  const ff=`"${customFontCSS}",serif`;
+  const diffFont=$('diff-font')&&$('diff-font').checked;
+  const ffArtist=diffFont?'Verdana,sans-serif':ff;
 
-  // Title
-  ctx.fillStyle = r(pal.accent);
-  ctx.font = 'bold 22px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText(title, W/2, mY+44);
+  // Title — big, generous top padding
+  const titleSize=30;
+  ctx.fillStyle=r(pal.text1);
+  ctx.font=`bold ${titleSize}px ${ff}`;
+  ctx.textAlign='center';
+  const titleY=mY+titleSize+38;
+  ctx.fillText(title,W/2,titleY);
 
-  // Name box
-  const nameY = mY+52, nameH = 26;
-  ctx.fillStyle = r(pal.text);
-  ctx.font = '10px Arial';
-  ctx.textAlign = 'left';
-  ctx.fillText('NOMBRE:', mX+18, nameY+16);
-  ctx.fillStyle = r(pal.bg);
-  ctx.strokeStyle = r(pal.border);
-  ctx.lineWidth = 0.8;
-  roundRect(ctx, mX+72, nameY, cW-90, nameH, 4);
-  ctx.fill(); ctx.stroke();
+  // Layout
+  const padH=18; // horizontal padding inside card for grid
+  const nameH=26;
+  const nameGap=10;
+  let gridTop,gridBot=mY+cH-22;
 
-  // Separator
-  const sepY = nameY+nameH+6;
-  ctx.strokeStyle = r(pal.border);
-  ctx.lineWidth = 0.5;
-  ctx.beginPath(); ctx.moveTo(mX+16,sepY); ctx.lineTo(mX+cW-16,sepY); ctx.stroke();
+  if(customNamePos==='top'){
+    const nameY=titleY+12;
+    drawNameBox(ctx,mX+padH,nameY,cW-padH*2,nameH,pal,r);
+    gridTop=nameY+nameH+nameGap;
+  } else if(customNamePos==='bottom'){
+    gridTop=titleY+14;
+    const nameY=gridBot-nameH;
+    drawNameBox(ctx,mX+padH,nameY,cW-padH*2,nameH,pal,r);
+    gridBot=nameY-nameGap;
+  } else {
+    gridTop=titleY+14;
+  }
 
-  // Grid 3×2
-  const gridTop=sepY+6, gridBot=mY+cH-8;
-  const gridH=gridBot-gridTop;
-  const gX=mX+10, cols=3, rows=2;
-  const cellW=(cW-20)/cols, cellH=gridH/rows;
+  // Grid 3×2 — smaller cells with more surrounding space
+  const gridPadH=padH+10; // extra lateral padding around grid
+  const gridPadV=8;
+  const gX=mX+gridPadH;
+  const gW=cW-gridPadH*2;
+  const gH=gridBot-gridTop-gridPadV;
+  // Cell size capped so they don't feel huge
+  const maxCellW=gW/3;
+  const maxCellH=gH/2;
+  const cellW=Math.min(maxCellW,160);
+  const cellH=Math.min(maxCellH,72);
+  // Centre the grid within available space
+  const gridOffX=gX+(gW-cellW*3)/2;
+  const gridOffY=gridTop+gridPadV+(gH-cellH*2)/2;
+
+  const sizeMap={s:10,m:13,l:17};
+  const fs=sizeMap[customSize]||13;
 
   PREVIEW_ARTISTS.forEach((artist,ai)=>{
-    const cr=Math.floor(ai/3), cc=ai%3;
-    const cx=gX+cc*cellW, cy=gridTop+cr*cellH;
-    ctx.fillStyle=r(pal.bg);
-    ctx.strokeStyle=r(pal.border);
-    ctx.lineWidth=0.8;
-    roundRect(ctx,cx+2,cy+2,cellW-4,cellH-4,5);
-    ctx.fill(); ctx.stroke();
-
-    // Artist text
-    ctx.fillStyle=r(pal.text);
+    const cr=Math.floor(ai/3),cc=ai%3;
+    const cx=gridOffX+cc*cellW, cy=gridOffY+cr*cellH;
+    const isAlt=(cr+cc)%2===1;
+    ctx.fillStyle=isAlt?r(pal.cell2):r(pal.cell1);
+    ctx.strokeStyle=r(pal.border); ctx.lineWidth=0.6;
+    rrect(ctx,cx+4,cy+4,cellW-8,cellH-8,7); ctx.fill(); ctx.stroke();
+    ctx.fillStyle=isAlt?r(pal.text2):r(pal.text1);
+    ctx.font=`bold ${fs}px ${ffArtist}`;
     ctx.textAlign='center';
-    // Auto-size font
-    let fs=14;
-    while(fs>9){
-      ctx.font=`bold ${fs}px Arial`;
-      if(ctx.measureText(artist).width < cellW-12) break;
-      fs--;
+    const maxW=cellW-20;
+    const words=artist.split(' ');
+    if(words.length>1 && ctx.measureText(artist).width>maxW){
+      const mid=Math.ceil(words.length/2);
+      const l1=words.slice(0,mid).join(' '), l2=words.slice(mid).join(' ');
+      ctx.fillText(l1,cx+cellW/2,cy+cellH/2-fs*0.45);
+      ctx.fillText(l2,cx+cellW/2,cy+cellH/2+fs*0.75);
+    } else {
+      ctx.fillText(artist,cx+cellW/2,cy+cellH/2+fs*0.38);
     }
-    ctx.font=`bold ${fs}px Arial`;
-    ctx.fillText(artist, cx+cellW/2, cy+cellH/2+fs*0.35);
   });
 }
 
-function roundRect(ctx,x,y,w,h,r){
+function drawNameBox(ctx,x,y,w,h,pal,r){
+  // Simple box, no line inside — the blank space speaks for itself
+  ctx.fillStyle=r(pal.cell1); ctx.strokeStyle=r(pal.border); ctx.lineWidth=0.8;
+  rrect(ctx,x,y,w,h,5); ctx.fill(); ctx.stroke();
+  ctx.fillStyle=r(pal.text1);
+  ctx.font='11px "DM Sans",sans-serif';
+  ctx.textAlign='left';
+  ctx.fillText('Propiedad de',x+10,y+h/2+4);
+}
+
+function drawBgPattern(ctx,x,y,w,h,pal){
+  if(customBg==='waves') return; // waves handled separately as border
+  ctx.save(); ctx.beginPath();
+  rrect(ctx,x,y,w,h,14); ctx.clip();
+  const r=a=>`rgba(${a.join(',')},0.13)`;
+  if(customBg==='dots'){
+    ctx.fillStyle=r(pal.cell2);
+    const spacing=20;
+    for(let dx=0;dx<w+spacing;dx+=spacing)
+      for(let dy=0;dy<h+spacing;dy+=spacing){
+        ctx.beginPath(); ctx.arc(x+dx,y+dy,3,0,Math.PI*2); ctx.fill();
+      }
+  } else if(customBg==='stripes'){
+    ctx.fillStyle=r(pal.cell2);
+    const sw=8,gap=16;
+    for(let dx=0;dx<w+gap;dx+=gap) ctx.fillRect(x+dx,y,sw,h);
+  }
+  ctx.restore();
+}
+
+function drawWaveBorder(ctx,x,y,w,h,color){
+  // Wavy border around card using sinusoidal path
+  const amp=8, freq=0.08;
+  ctx.strokeStyle=color; ctx.lineWidth=8; ctx.lineJoin='round'; ctx.lineCap='round';
   ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.lineTo(x+w-r,y);
+  // Top edge left→right
+  for(let i=0;i<=w;i++){
+    const px=x+i, py=y+Math.sin(i*freq)*amp;
+    i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }
+  // Right edge top→bottom
+  for(let i=0;i<=h;i++){
+    const px=x+w+Math.sin(i*freq)*amp, py=y+i;
+    ctx.lineTo(px,py);
+  }
+  // Bottom edge right→left
+  for(let i=w;i>=0;i--){
+    const px=x+i, py=y+h-Math.sin(i*freq)*amp;
+    ctx.lineTo(px,py);
+  }
+  // Left edge bottom→top
+  for(let i=h;i>=0;i--){
+    const px=x-Math.sin(i*freq)*amp, py=y+i;
+    ctx.lineTo(px,py);
+  }
+  ctx.closePath(); ctx.stroke();
+}
+
+function rrect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
   ctx.quadraticCurveTo(x+w,y,x+w,y+r);
   ctx.lineTo(x+w,y+h-r);
   ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
@@ -794,9 +953,12 @@ function roundRect(ctx,x,y,w,h,r){
   ctx.quadraticCurveTo(x,y,x+r,y);
   ctx.closePath();
 }
+// Keep roundRect alias for old code
+function roundRect(ctx,x,y,w,h,r){ rrect(ctx,x,y,w,h,r); }
 
 function confirmCustom(){
-  $('ss4').textContent=selectedPalette.label;
+  const t=($('custom-title').value.trim()||'Bingo Musical');
+  $('ss4').textContent=`${t} · ${selectedPalette.label}`;
   $('ss4').classList.remove('hidden');
   activateStep(5);
 }
@@ -811,94 +973,116 @@ function generatePDF(){
 
   const n=S.numPlayers;
   const pal=selectedPalette;
-  const title=($('custom-title').value.trim()||'BINGO MUSICAL').toUpperCase();
+  const title=($('custom-title').value.trim()||'Bingo Musical');
+  const diffFontPDF=$('diff-font')&&$('diff-font').checked;
+  const fontPDF=customFontCSS; // used as label only — jsPDF uses helvetica
+  const sizeMap={s:7,m:9,l:12};
+  const artistFS=sizeMap[customSize]||9;
 
   S.cards=[];
   for(let i=0;i<n;i++) S.cards.push({id:i+1,artists:shuffle([...S.artists]).slice(0,6)});
 
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-  const W=210,H=297,mX=10,mY=8;
+  const W=210,H=297,mX=12,mY=10;
   const cW=W-mX*2, cH=(H-mY*3)/2;
-
-  // Helper
-  const rgb=(arr)=>({r:arr[0],g:arr[1],b:arr[2]});
+  const rc=a=>[a[0],a[1],a[2]];
 
   S.cards.forEach((card,i)=>{
-    if(i>0&&i%2===0) doc.addPage();
-    const row=i%2, x=mX, y=mY+row*(cH+mY);
+    if(i>0&&i%2===0){doc.addPage();}
+    const row=i%2,x=mX,y=mY+row*(cH+mY);
 
-    // Card background
-    doc.setFillColor(...pal.card);
-    doc.roundedRect(x,y,cW,cH,4,4,'F');
+    // Card bg
+    doc.setFillColor(...rc(pal.card));
+    doc.roundedRect(x,y,cW,cH,5,5,'F');
 
-    // Accent top bar
-    doc.setFillColor(...pal.accent);
-    doc.roundedRect(x,y,cW,8,4,4,'F');
-    doc.setFillColor(...pal.card);
-    doc.rect(x,y+4,cW,4,'F'); // flatten bottom corners of bar
+    // Background pattern
+    if(customBg==='dots'){
+      doc.setFillColor(...rc(pal.cell2));
+      const spacing=5;
+      for(let dx=1;dx<cW-1;dx+=spacing)
+        for(let dy=1;dy<cH-1;dy+=spacing)
+          doc.circle(x+dx,y+dy,0.6,'F');
+    } else if(customBg==='stripes'){
+      doc.setFillColor(...rc(pal.cell2));
+      const sw=2,gap=4.5;
+      for(let dx=0;dx<cW;dx+=gap) doc.rect(x+dx,y,sw,cH,'F');
+    }
 
-    // Card border
-    doc.setDrawColor(...pal.border);doc.setLineWidth(0.5);
-    doc.roundedRect(x,y,cW,cH,4,4,'S');
+    // Border or waves
+    if(customBg==='waves'){
+      // Draw wave border in PDF using polyline approximation
+      const wc=pal.cell2; const amp=2.5,freq=0.3;
+      doc.setDrawColor(...rc(wc)); doc.setLineWidth(3);
+      // Top
+      const topPts=[]; for(let i=0;i<=cW;i+=2) topPts.push([x+i, y+Math.sin(i*freq)*amp]);
+      doc.lines(topPts.slice(1).map((p,i)=>[p[0]-topPts[i][0],p[1]-topPts[i][1]]),topPts[0][0],topPts[0][1]);
+      // Bottom
+      const botPts=[]; for(let i=0;i<=cW;i+=2) botPts.push([x+cW-i, y+cH-Math.sin((cW-i)*freq)*amp]);
+      doc.lines(botPts.slice(1).map((p,i)=>[p[0]-botPts[i][0],p[1]-botPts[i][1]]),botPts[0][0],botPts[0][1]);
+      // Left
+      const lPts=[]; for(let i=0;i<=cH;i+=2) lPts.push([x-Math.sin(i*freq)*amp, y+cH-i]);
+      doc.lines(lPts.slice(1).map((p,i)=>[p[0]-lPts[i][0],p[1]-lPts[i][1]]),lPts[0][0],lPts[0][1]);
+      // Right
+      const rPts=[]; for(let i=0;i<=cH;i+=2) rPts.push([x+cW+Math.sin(i*freq)*amp, y+i]);
+      doc.lines(rPts.slice(1).map((p,i)=>[p[0]-rPts[i][0],p[1]-rPts[i][1]]),rPts[0][0],rPts[0][1]);
+    } else {
+      doc.setDrawColor(...rc(pal.border));doc.setLineWidth(0.4);
+      doc.roundedRect(x,y,cW,cH,5,5,'S');
+    }
 
-    // Title
+    // Title — generous top margin, bigger
     doc.setFont('helvetica','bold');
-    doc.setFontSize(15);
-    doc.setTextColor(...pal.accent);
-    doc.text(title, x+cW/2, y+16, {align:'center'});
+    doc.setFontSize(18);
+    doc.setTextColor(...rc(pal.text1));
+    const titleY=y+22;
+    doc.text(title,x+cW/2,titleY,{align:'center'});
 
-    // Name box label + rect
-    const nameY=y+21;
-    const nameH=10;
-    doc.setFontSize(6.5);
-    doc.setTextColor(...pal.text);
-    doc.setFont('helvetica','normal');
-    doc.text('NOMBRE:', x+12, nameY+4);
-    doc.setDrawColor(...pal.border);doc.setLineWidth(0.3);
-    doc.setFillColor(...pal.bg);
-    doc.roundedRect(x+28, nameY, cW-40, nameH, 2,2,'FD');
+    // Name box + grid
+    const nameH=9, gridPadH=10, gridPadV=5;
+    const nameGap=5;
 
-    // Separator
-    const sepY=nameY+nameH+3;
-    doc.setDrawColor(...pal.border);doc.setLineWidth(0.2);
-    doc.line(x+8,sepY,x+cW-8,sepY);
+    let gridTop,gridBot=y+cH-10;
 
-    // Grid 3×2 — uses remaining space
-    const gridTop=sepY+3;
-    const gridBot=y+cH-4;
-    const gridH=gridBot-gridTop;
-    const cellW=(cW-20)/3, cellH=gridH/2;
-    const gX=x+10, gY=gridTop;
+    if(customNamePos==='top'){
+      const nameY=titleY+5;
+      drawNameBoxPDF(doc,x+gridPadH,nameY,cW-gridPadH*2,nameH,pal,rc);
+      gridTop=nameY+nameH+nameGap;
+    } else if(customNamePos==='bottom'){
+      gridTop=titleY+5;
+      const nameY=gridBot-nameH;
+      drawNameBoxPDF(doc,x+gridPadH,nameY,cW-gridPadH*2,nameH,pal,rc);
+      gridBot=nameY-nameGap;
+    } else {
+      gridTop=titleY+5;
+    }
+
+    // Centred smaller grid
+    const gW=cW-gridPadH*2;
+    const gH=gridBot-gridTop-gridPadV;
+    const cellW=gW/3, cellH=gH/2;
+    // Extra centering offset
+    const gX=x+gridPadH+(gW-cellW*3)/2;
+    const gY=gridTop+gridPadV+(gH-cellH*2)/2;
 
     card.artists.forEach((artist,ai)=>{
       const cr=Math.floor(ai/3),cc=ai%3;
       const cx=gX+cc*cellW, cy=gY+cr*cellH;
-      doc.setFillColor(...pal.bg);
-      doc.setDrawColor(...pal.border);doc.setLineWidth(0.25);
+      const isAlt=(cr+cc)%2===1;
+      doc.setFillColor(...rc(isAlt?pal.cell2:pal.cell1));
+      doc.setDrawColor(...rc(pal.border));doc.setLineWidth(0.15);
       doc.roundedRect(cx+1,cy+1,cellW-2,cellH-2,2,2,'FD');
-
-      // Artist name — bigger, proportional
-      const maxW=cellW-6;
-      let fs=11;
-      doc.setFont('helvetica','bold');
-      // Auto-fit font size
-      while(fs>7){
-        doc.setFontSize(fs);
-        const lines=doc.splitTextToSize(artist,maxW);
-        if(lines.length<=2) break;
-        fs--;
-      }
-      doc.setFontSize(fs);
-      doc.setTextColor(...pal.text);
-      const lines=doc.splitTextToSize(artist,maxW);
-      doc.text(lines, cx+cellW/2, cy+cellH/2, {align:'center',baseline:'middle'});
+      doc.setFontSize(artistFS);
+      doc.setTextColor(...rc(isAlt?pal.text2:pal.text1));
+      doc.setFont(diffFontPDF?'courier':'helvetica','bold');
+      const lines=doc.splitTextToSize(artist,cellW-5);
+      doc.text(lines,cx+cellW/2,cy+cellH/2,{align:'center',baseline:'middle'});
     });
 
-    // Cut line between the two cards on the same page
-    if(row===0 && i<S.cards.length-1){
+    // Cut line
+    if(row===0&&i<S.cards.length-1){
       const cutY=y+cH+mY/2;
-      doc.setDrawColor(160,160,160);doc.setLineWidth(0.15);
+      doc.setDrawColor(180,180,180);doc.setLineWidth(0.12);
       doc.setLineDashPattern([2,2],0);
       doc.line(x,cutY,x+cW,cutY);
       doc.setLineDashPattern([],0);
@@ -909,6 +1093,36 @@ function generatePDF(){
   showMsg('generate-msg',
     `✅ PDF descargado con <strong>${n} cartón${n!==1?'es':''}</strong> (${Math.ceil(n/2)} hoja${Math.ceil(n/2)!==1?'s':''} A4). ¡Imprímelos y repártelos!`,
     'ok');
+}
+
+function drawNameBoxPDF(doc,x,y,w,h,pal,rc){
+  doc.setFillColor(...rc(pal.cell1));
+  doc.setDrawColor(...rc(pal.border));doc.setLineWidth(0.2);
+  doc.roundedRect(x,y,w,h,1.5,1.5,'FD');
+  doc.setFontSize(6);doc.setTextColor(...rc(pal.text1));doc.setFont('helvetica','normal');
+  doc.text('Propiedad de',x+3,y+h/2+1.5);
+  // No line — the blank space already invites writing
+}
+
+function drawGridPDF(doc,card,x,y,cW,cH,gridTop,artistFS,pal,rc,gridBotOverride){
+  const gridBot=gridBotOverride||(y+cH-3);
+  const gX=x+5,gW=cW-10,gH=gridBot-gridTop;
+  const cellW=gW/3,cellH=gH/2;
+
+  card.artists.forEach((artist,ai)=>{
+    const cr=Math.floor(ai/3),cc=ai%3;
+    const cx=gX+cc*cellW,cy=gridTop+cr*cellH;
+    const isAlt=(cr+cc)%2===1;
+    doc.setFillColor(...rc(isAlt?pal.cell2:pal.cell1));
+    doc.setDrawColor(...rc(pal.border));doc.setLineWidth(0.2);
+    doc.roundedRect(cx+0.5,cy+0.5,cellW-1,cellH-1,2,2,'FD');
+    doc.setFontSize(artistFS);
+    doc.setTextColor(...rc(isAlt?pal.text2:pal.text1));
+    doc.setFont('helvetica','bold');
+    const maxW=cellW-4;
+    const lines=doc.splitTextToSize(artist,maxW);
+    doc.text(lines,cx+cellW/2,cy+cellH/2,{align:'center',baseline:'middle'});
+  });
 }
 
 // ══════════════════════════════════════
