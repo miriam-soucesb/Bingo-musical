@@ -1099,7 +1099,7 @@ window.onbeforeprint=function(){
     `${i>0&&i%2===0?'<div style="page-break-before:always"></div>':''}`+
     `<div class="pc"><div class="pt">🎶 BINGO MUSICAL · Cartón #${c.id}</div>`+
     `<div class="pg">${c.artists.map(a=>`<div class="pce">${esc(a)}</div>`).join('')}</div></div>`+
-    `${i%2===0&&i<S.cards.length-1?'<div class="cut"></div>":''}`
+    `${i%2===0&&i<S.cards.length-1?'<div class="cut"></div>':''}`
   ).join('');
 };
 window.onafterprint=()=>{$('print-zone').innerHTML='';};
