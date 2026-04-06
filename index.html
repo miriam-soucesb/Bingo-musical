@@ -170,16 +170,16 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
 ════════════════════════════════ -->
 <div id="screen-home" class="screen active">
   <div style="max-width:600px;width:100%;margin:0 auto;padding:3rem 1.5rem;display:flex;flex-direction:column;align-items:center;">
-    <div class="home-logo">🎶 BINGO<br><span>MUSICAL</span></div>
+    <div class="home-logo">BINGO<br><span>MUSICAL</span></div>
     <p class="home-sub">Crea los cartones · Conecta Spotify · ¡A jugar!</p>
     <div class="home-cards">
       <button class="hbtn hbtn-a" onclick="goTo('phase1')">
-        <span class="hbtn-icon">🎴</span>
+        <span class="hbtn-icon">🔄</span>
         <span class="hbtn-label">Generar partida</span>
         <span class="hbtn-desc">Importa tu playlist, edita el pool de artistas y descarga los cartones en PDF</span>
       </button>
       <button class="hbtn hbtn-b" onclick="goTo('phase2')">
-        <span class="hbtn-icon">🎮</span>
+        <span class="hbtn-icon">🎶</span>
         <span class="hbtn-label">¡A jugar!</span>
         <span class="hbtn-desc">Conecta Spotify y detecta automáticamente cada artista que suena</span>
       </button>
@@ -276,12 +276,57 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
       </div>
     </div>
 
-    <!-- ── STEP 4: Generar PDF ── -->
+    <!-- ── STEP 4: Personalización ── -->
     <div class="step-block">
       <div class="step-card locked" id="sc4">
-        <div class="step-header">
+        <div class="step-header" onclick="jumpTo(4)">
           <span class="step-num step-num-pending" id="sn4">4</span>
-          <span class="step-title-txt step-title-pending" id="st4">Descargar cartones en PDF</span>
+          <span class="step-title-txt step-title-pending" id="st4">Personalizar cartones</span>
+          <span class="step-check hidden" id="sk4">✓</span>
+          <span class="step-summary hidden" id="ss4"></span>
+        </div>
+        <div class="step-body">
+          <p class="step-desc">Dale tu toque personal a los cartones antes de generarlos.</p>
+
+          <!-- Título -->
+          <div style="margin-bottom:1.25rem;">
+            <label class="lbl">Título de la partida</label>
+            <input type="text" id="custom-title" placeholder="BINGO MUSICAL" maxlength="40"
+              oninput="renderPreview()"
+              style="font-size:1rem;font-weight:600;letter-spacing:0.03em;"/>
+            <p style="font-size:0.74rem;color:#334155;margin-top:4px;">Aparecerá en grande en todos los cartones. Si lo dejas vacío se usará "BINGO MUSICAL".</p>
+          </div>
+
+          <!-- Paleta -->
+          <label class="lbl">Paleta de colores</label>
+          <p class="step-desc" style="margin-bottom:0.75rem;">Elige el estilo visual de tus cartones.</p>
+          <div id="palette-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.25rem;"></div>
+
+          <!-- CARD PREVIEW -->
+          <label class="lbl">Previsualización del cartón</label>
+          <div id="card-preview" style="
+            border-radius:14px;overflow:hidden;margin-bottom:1rem;
+            border:1px solid rgba(255,255,255,0.08);
+          ">
+            <canvas id="preview-canvas" style="width:100%;display:block;border-radius:14px;"></canvas>
+          </div>
+
+          <div id="custom-msg" class="hidden"></div>
+
+          <div class="btn-row">
+            <button class="btn btn-ghost" onclick="jumpTo(3)">← Atrás</button>
+            <button class="btn btn-neon" onclick="confirmCustom()">Confirmar →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 5: Generar PDF ── -->
+    <div class="step-block">
+      <div class="step-card locked" id="sc5">
+        <div class="step-header" onclick="jumpTo(5)">
+          <span class="step-num step-num-pending" id="sn5">5</span>
+          <span class="step-title-txt step-title-pending" id="st5">Descargar cartones en PDF</span>
         </div>
         <div class="step-body">
           <p class="step-desc">Cada cartón ocupa <strong>media hoja A4</strong>. Imprímelos, recórtalos y repártelos antes de empezar.</p>
@@ -290,12 +335,13 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
           </div>
           <div id="generate-msg" class="hidden"></div>
           <div class="btn-row">
-            <button class="btn btn-ghost" onclick="jumpTo(3)">← Atrás</button>
+            <button class="btn btn-ghost" onclick="jumpTo(4)">← Atrás</button>
             <button class="btn btn-hot" onclick="generatePDF()" style="flex:1;">🎶 Generar cartones y descargar PDF</button>
           </div>
         </div>
       </div>
     </div>
+
 
   </div>
 </div>
@@ -471,7 +517,7 @@ function jumpTo(n){
 
 function activateStep(n){
   S.currentStep = n;
-  for(let i=1;i<=4;i++){
+  for(let i=1;i<=5;i++){
     if(i<n) setStep(i,'done');
     else if(i===n) setStep(i,'active');
     else setStep(i,'locked');
@@ -602,6 +648,160 @@ function confirmPlayers(){
 }
 
 // ══════════════════════════════════════
+// PALETTES
+// ══════════════════════════════════════
+const PALETTES = [
+  { id:'midnight', name:'Midnight',    bg:[10,12,28],   card:[20,24,52],   accent:[120,80,255], text:[220,210,255], border:[80,60,200],  label:'Morado noche'   },
+  { id:'neon',     name:'Neon Stage',  bg:[8,10,18],    card:[15,22,18],   accent:[0,255,120],  text:[200,255,220], border:[0,200,100],  label:'Verde neón'     },
+  { id:'sunset',   name:'Sunset',      bg:[28,10,8],    card:[50,20,12],   accent:[255,120,40], text:[255,220,180], border:[220,80,20],  label:'Naranja sunset' },
+  { id:'rose',     name:'Rose Gold',   bg:[25,12,18],   card:[48,20,32],   accent:[255,100,150],text:[255,200,215], border:[220,80,120], label:'Rosa dorado'    },
+  { id:'ocean',    name:'Deep Ocean',  bg:[6,16,30],    card:[12,28,52],   accent:[0,180,255],  text:[180,225,255], border:[0,140,220],  label:'Azul océano'    },
+  { id:'gold',     name:'Gold Club',   bg:[18,14,6],    card:[38,28,8],    accent:[255,200,40], text:[255,235,160], border:[200,160,20], label:'Dorado club'    },
+  { id:'minimal',  name:'Minimal B&W', bg:[245,245,245],card:[255,255,255],accent:[30,30,30],   text:[30,30,30],    border:[180,180,180],label:'Blanco minimal' },
+  { id:'forest',   name:'Forest',      bg:[8,18,10],    card:[14,32,16],   accent:[80,200,80],  text:[180,240,180], border:[50,160,60],  label:'Verde bosque'   },
+];
+let selectedPalette = PALETTES[0];
+
+// Sample artists for preview
+const PREVIEW_ARTISTS = ['Rosalía','Bad Bunny','Daft Punk','The Weeknd','C. Tangana','Karol G'];
+
+function renderPaletteGrid(){
+  const g=$('palette-grid');
+  g.innerHTML=PALETTES.map((p,i)=>`
+    <div onclick="selectPalette(${i})" id="pal-${p.id}" style="
+      cursor:pointer;border-radius:12px;overflow:hidden;
+      border:2px solid ${selectedPalette.id===p.id?'#f0ff44':'rgba(255,255,255,0.1)'};
+      transition:all 0.18s;aspect-ratio:3/2;
+      background:rgb(${p.bg.join(',')});
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+      padding:6px;
+    ">
+      <div style="width:70%;height:6px;border-radius:3px;background:rgb(${p.accent.join(',')});opacity:0.9;"></div>
+      <div style="width:90%;height:3px;border-radius:2px;background:rgb(${p.text.join(',')});opacity:0.4;"></div>
+      <div style="width:90%;height:3px;border-radius:2px;background:rgb(${p.text.join(',')});opacity:0.25;"></div>
+      <p style="font-size:0.6rem;color:rgb(${p.text.join(',')});opacity:0.7;margin-top:3px;text-align:center;line-height:1.2;">${p.label}</p>
+    </div>
+  `).join('');
+  renderPreview();
+}
+
+function selectPalette(idx){
+  selectedPalette=PALETTES[idx];
+  PALETTES.forEach(p=>{
+    const el=$(`pal-${p.id}`);
+    if(el) el.style.borderColor=p.id===selectedPalette.id?'#f0ff44':'rgba(255,255,255,0.1)';
+  });
+  renderPreview();
+}
+
+function renderPreview(){
+  const canvas = $('preview-canvas');
+  if(!canvas) return;
+  const pal = selectedPalette;
+  const title = ($('custom-title') && $('custom-title').value.trim()
+    ? $('custom-title').value.trim() : 'BINGO MUSICAL').toUpperCase();
+
+  // Canvas size: A4 half-page ratio (210 x 148.5mm) → scale to fit width
+  const W = 600, H = 424; // ~A4 half proportions at screen resolution
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  const r = a => `rgb(${a.join(',')})`;
+  const mX=16, mY=12, cW=W-mX*2, cH=H-mY*2;
+
+  // Card background
+  ctx.fillStyle = r(pal.card);
+  roundRect(ctx, mX, mY, cW, cH, 10);
+  ctx.fill();
+
+  // Accent top bar
+  ctx.fillStyle = r(pal.accent);
+  roundRect(ctx, mX, mY, cW, 22, 10);
+  ctx.fill();
+  // flatten bottom of bar
+  ctx.fillRect(mX, mY+11, cW, 11);
+
+  // Card border
+  ctx.strokeStyle = r(pal.border);
+  ctx.lineWidth = 1.5;
+  roundRect(ctx, mX, mY, cW, cH, 10);
+  ctx.stroke();
+
+  // Title
+  ctx.fillStyle = r(pal.accent);
+  ctx.font = 'bold 22px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText(title, W/2, mY+44);
+
+  // Name box
+  const nameY = mY+52, nameH = 26;
+  ctx.fillStyle = r(pal.text);
+  ctx.font = '10px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText('NOMBRE:', mX+18, nameY+16);
+  ctx.fillStyle = r(pal.bg);
+  ctx.strokeStyle = r(pal.border);
+  ctx.lineWidth = 0.8;
+  roundRect(ctx, mX+72, nameY, cW-90, nameH, 4);
+  ctx.fill(); ctx.stroke();
+
+  // Separator
+  const sepY = nameY+nameH+6;
+  ctx.strokeStyle = r(pal.border);
+  ctx.lineWidth = 0.5;
+  ctx.beginPath(); ctx.moveTo(mX+16,sepY); ctx.lineTo(mX+cW-16,sepY); ctx.stroke();
+
+  // Grid 3×2
+  const gridTop=sepY+6, gridBot=mY+cH-8;
+  const gridH=gridBot-gridTop;
+  const gX=mX+10, cols=3, rows=2;
+  const cellW=(cW-20)/cols, cellH=gridH/rows;
+
+  PREVIEW_ARTISTS.forEach((artist,ai)=>{
+    const cr=Math.floor(ai/3), cc=ai%3;
+    const cx=gX+cc*cellW, cy=gridTop+cr*cellH;
+    ctx.fillStyle=r(pal.bg);
+    ctx.strokeStyle=r(pal.border);
+    ctx.lineWidth=0.8;
+    roundRect(ctx,cx+2,cy+2,cellW-4,cellH-4,5);
+    ctx.fill(); ctx.stroke();
+
+    // Artist text
+    ctx.fillStyle=r(pal.text);
+    ctx.textAlign='center';
+    // Auto-size font
+    let fs=14;
+    while(fs>9){
+      ctx.font=`bold ${fs}px Arial`;
+      if(ctx.measureText(artist).width < cellW-12) break;
+      fs--;
+    }
+    ctx.font=`bold ${fs}px Arial`;
+    ctx.fillText(artist, cx+cellW/2, cy+cellH/2+fs*0.35);
+  });
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+function confirmCustom(){
+  $('ss4').textContent=selectedPalette.label;
+  $('ss4').classList.remove('hidden');
+  activateStep(5);
+}
+
+// ══════════════════════════════════════
 // GENERATE PDF
 // ══════════════════════════════════════
 function generatePDF(){
@@ -610,50 +810,98 @@ function generatePDF(){
   if(typeof window.jspdf==='undefined'){showMsg('generate-msg','❌ No se pudo cargar la librería PDF. Comprueba tu conexión.','error');return;}
 
   const n=S.numPlayers;
+  const pal=selectedPalette;
+  const title=($('custom-title').value.trim()||'BINGO MUSICAL').toUpperCase();
+
   S.cards=[];
   for(let i=0;i<n;i++) S.cards.push({id:i+1,artists:shuffle([...S.artists]).slice(0,6)});
 
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-  const W=210,H=297,mX=12,mY=10;
+  const W=210,H=297,mX=10,mY=8;
   const cW=W-mX*2, cH=(H-mY*3)/2;
+
+  // Helper
+  const rgb=(arr)=>({r:arr[0],g:arr[1],b:arr[2]});
 
   S.cards.forEach((card,i)=>{
     if(i>0&&i%2===0) doc.addPage();
     const row=i%2, x=mX, y=mY+row*(cH+mY);
 
-    // background
-    doc.setFillColor(15,18,32);
+    // Card background
+    doc.setFillColor(...pal.card);
     doc.roundedRect(x,y,cW,cH,4,4,'F');
-    // border
-    doc.setDrawColor(240,255,68);doc.setLineWidth(0.6);
+
+    // Accent top bar
+    doc.setFillColor(...pal.accent);
+    doc.roundedRect(x,y,cW,8,4,4,'F');
+    doc.setFillColor(...pal.card);
+    doc.rect(x,y+4,cW,4,'F'); // flatten bottom corners of bar
+
+    // Card border
+    doc.setDrawColor(...pal.border);doc.setLineWidth(0.5);
     doc.roundedRect(x,y,cW,cH,4,4,'S');
-    // header
-    doc.setFont('helvetica','bold');doc.setFontSize(13);doc.setTextColor(240,255,68);
-    doc.text('🎶 BINGO MUSICAL',x+cW/2,y+10,{align:'center'});
-    doc.setFontSize(9);doc.setTextColor(100,116,139);
-    doc.text(`Cartón #${card.id}`,x+cW/2,y+17,{align:'center'});
-    // separator
-    doc.setDrawColor(35,42,68);doc.setLineWidth(0.25);
-    doc.line(x+8,y+21,x+cW-8,y+21);
-    // grid 3×2
-    const gX=x+8,gY=y+24,cellW=(cW-16)/3,cellH=(cH-30)/2;
+
+    // Title
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(15);
+    doc.setTextColor(...pal.accent);
+    doc.text(title, x+cW/2, y+16, {align:'center'});
+
+    // Name box label + rect
+    const nameY=y+21;
+    const nameH=10;
+    doc.setFontSize(6.5);
+    doc.setTextColor(...pal.text);
+    doc.setFont('helvetica','normal');
+    doc.text('NOMBRE:', x+12, nameY+4);
+    doc.setDrawColor(...pal.border);doc.setLineWidth(0.3);
+    doc.setFillColor(...pal.bg);
+    doc.roundedRect(x+28, nameY, cW-40, nameH, 2,2,'FD');
+
+    // Separator
+    const sepY=nameY+nameH+3;
+    doc.setDrawColor(...pal.border);doc.setLineWidth(0.2);
+    doc.line(x+8,sepY,x+cW-8,sepY);
+
+    // Grid 3×2 — uses remaining space
+    const gridTop=sepY+3;
+    const gridBot=y+cH-4;
+    const gridH=gridBot-gridTop;
+    const cellW=(cW-20)/3, cellH=gridH/2;
+    const gX=x+10, gY=gridTop;
+
     card.artists.forEach((artist,ai)=>{
-      const cr=Math.floor(ai/3),cc=ai%3,cx=gX+cc*cellW,cy=gY+cr*cellH;
-      doc.setFillColor(22,27,50);doc.setDrawColor(45,55,90);doc.setLineWidth(0.2);
+      const cr=Math.floor(ai/3),cc=ai%3;
+      const cx=gX+cc*cellW, cy=gY+cr*cellH;
+      doc.setFillColor(...pal.bg);
+      doc.setDrawColor(...pal.border);doc.setLineWidth(0.25);
       doc.roundedRect(cx+1,cy+1,cellW-2,cellH-2,2,2,'FD');
-      doc.setFontSize(8);doc.setTextColor(215,225,240);doc.setFont('helvetica','bold');
-      const ls=doc.splitTextToSize(artist,cellW-6);
-      doc.text(ls,cx+cellW/2,cy+cellH/2,{align:'center',baseline:'middle'});
+
+      // Artist name — bigger, proportional
+      const maxW=cellW-6;
+      let fs=11;
+      doc.setFont('helvetica','bold');
+      // Auto-fit font size
+      while(fs>7){
+        doc.setFontSize(fs);
+        const lines=doc.splitTextToSize(artist,maxW);
+        if(lines.length<=2) break;
+        fs--;
+      }
+      doc.setFontSize(fs);
+      doc.setTextColor(...pal.text);
+      const lines=doc.splitTextToSize(artist,maxW);
+      doc.text(lines, cx+cellW/2, cy+cellH/2, {align:'center',baseline:'middle'});
     });
-    // cut line between cards on same page
-    if(row===0&&i<S.cards.length-1){
-      doc.setDrawColor(160,170,180);doc.setLineWidth(0.18);
+
+    // Cut line between the two cards on the same page
+    if(row===0 && i<S.cards.length-1){
+      const cutY=y+cH+mY/2;
+      doc.setDrawColor(160,160,160);doc.setLineWidth(0.15);
       doc.setLineDashPattern([2,2],0);
-      doc.line(x,y+cH+mY/2,x+cW,y+cH+mY/2);
+      doc.line(x,cutY,x+cW,cutY);
       doc.setLineDashPattern([],0);
-      doc.setFontSize(5.5);doc.setTextColor(140,150,160);
-      doc.text('✂  Cortar aquí',x+cW/2,y+cH+mY/2+2,{align:'center'});
     }
   });
 
@@ -851,7 +1099,7 @@ window.onbeforeprint=function(){
     `${i>0&&i%2===0?'<div style="page-break-before:always"></div>':''}`+
     `<div class="pc"><div class="pt">🎶 BINGO MUSICAL · Cartón #${c.id}</div>`+
     `<div class="pg">${c.artists.map(a=>`<div class="pce">${esc(a)}</div>`).join('')}</div></div>`+
-    `${i%2===0&&i<S.cards.length-1?'<div class="cut">✂ Cortar aquí</div>':''}`
+    `${i%2===0&&i<S.cards.length-1?'<div class="cut"></div>":''}`
   ).join('');
 };
 window.onafterprint=()=>{$('print-zone').innerHTML='';};
@@ -860,6 +1108,7 @@ window.onafterprint=()=>{$('print-zone').innerHTML='';};
 // INIT
 // ══════════════════════════════════════
 handleCallback();
+renderPaletteGrid();
 </script>
 </body>
 </html>
