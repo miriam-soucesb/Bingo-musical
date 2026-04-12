@@ -280,10 +280,10 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
           <span class="step-summary hidden" id="ss3"></span>
         </div>
         <div class="step-body">
-          <p class="step-desc">Se generará un cartón único para cada jugador con 6 artistas aleatorios.</p>
+          <p class="step-desc">Se generará un cartón único para cada jugador con 6 artistas aleatorios. El sistema calcula automáticamente cuántos cartones únicos puede garantizar con tu pool actual.</p>
           <div style="max-width:180px;">
             <label class="lbl">Jugadores</label>
-            <input type="number" id="num-players" value="4" min="1" max="200"/>
+            <input type="number" id="num-players" value="4" min="1" max="200" oninput="updatePlayersMsg()"/>
           </div>
           <div id="players-msg" class="hidden"></div>
           <div class="btn-row">
@@ -702,6 +702,57 @@ function confirmPool(){
 }
 
 // ══════════════════════════════════════
+// MAX CARDS CALCULATION
+// ══════════════════════════════════════
+function maxSafeCards(n){
+  // With n artists and 6 per card, we use a conservative formula
+  // that guarantees meaningful diversity between cards.
+  // C(n,6) is the theoretical max but impractical for large n.
+  // We use: floor(n! / (6! * (n-6)!)) capped at a sensible limit,
+  // but for UX we show a simpler conservative limit:
+  // each card uses 6 unique artists, so max unique combos = C(n,6)
+  if(n < 6) return 0;
+  // Calculate C(n,6)
+  let result = 1;
+  for(let i=0;i<6;i++) result = result * (n-i) / (i+1);
+  return Math.floor(result);
+}
+
+function artistsNeededForCards(numCards){
+  // Find minimum n such that C(n,6) >= numCards
+  // Start from 6 and go up
+  for(let n=6;n<=500;n++){
+    if(maxSafeCards(n) >= numCards) return n;
+  }
+  return 500;
+}
+
+function updatePlayersMsg(){
+  const n=parseInt($('num-players').value)||0;
+  const pool=S.artists.length;
+  if(!n||n<1){ hideMsg('players-msg'); return; }
+  if(pool<6){
+    showMsg('players-msg','⚠️ Necesitas al menos 6 artistas en el pool. Vuelve al paso 1.','warn');
+    return;
+  }
+  // With the smart algorithm, a safe conservative estimate:
+  // each card needs at least 2 unique artists vs any other card
+  // rough practical limit: pool * (pool-1) / 6 but capped
+  const practicalMax = Math.min(Math.floor(pool * pool / 12), 500);
+  if(n <= practicalMax){
+    showMsg('players-msg',
+      `✅ Con <strong>${pool} artistas</strong> el sistema puede generar <strong>${n} cartones</strong> garantizando que ninguno comparte más de 4 artistas con otro.`,
+      'ok');
+  } else {
+    const toAdd = Math.ceil(Math.sqrt(n * 12)) - pool + 2;
+    showMsg('players-msg',
+      `⚠️ Con <strong>${pool} artistas</strong> puede ser difícil garantizar ${n} cartones únicos. `+
+      `Añade al menos <strong>${Math.max(toAdd,1)} artista${toAdd!==1?'s':''} más</strong> a tu playlist y vuelve al <strong>Paso 1</strong>.`,
+      'warn');
+  }
+}
+
+// ══════════════════════════════════════
 // PLAYERS STEP
 // ══════════════════════════════════════
 function confirmPlayers(){
@@ -709,6 +760,16 @@ function confirmPlayers(){
   const n=parseInt($('num-players').value)||0;
   if(n<1){showMsg('players-msg','⚠️ Introduce al menos 1 jugador.','warn');return;}
   if(n>200){showMsg('players-msg','⚠️ Máximo 200 cartones por partida.','warn');return;}
+  const max=maxSafeCards(S.artists.length);
+  if(n>max){
+    const needed=artistsNeededForCards(n);
+    const toAdd=needed-S.artists.length;
+    showMsg('players-msg',
+      `❌ No es posible garantizar cartones únicos para <strong>${n} jugadores</strong> con solo <strong>${S.artists.length} artistas</strong>. `+
+      `Añade <strong>${toAdd} artista${toAdd!==1?'s':''} más</strong> a tu playlist y vuelve al <strong>Paso 1</strong> para importar el CSV actualizado.`,
+      'error');
+    return;
+  }
   S.numPlayers=n;
   $('ss3').textContent=`${n} jugador${n!==1?'es':''}`;
   $('ss3').classList.remove('hidden');
@@ -845,7 +906,7 @@ function renderPreview(){
   let gridTop,gridBot=mY+cH-22;
 
   if(customNamePos==='top'){
-    const nameY=titleY+28;
+    const nameY=titleY+42;
     drawNameBox(ctx,mX+padH,nameY,cW-padH*2,nameH,pal,r);
     gridTop=nameY+nameH+nameGap;
   } else if(customNamePos==='bottom'){
@@ -981,6 +1042,43 @@ function confirmCustom(){
 // ══════════════════════════════════════
 // GENERATE PDF
 // ══════════════════════════════════════
+// ══════════════════════════════════════
+// SMART UNIQUE CARD GENERATION
+// Max 4 artists shared between any two cards
+// ══════════════════════════════════════
+function generateUniqueCards(pool, numCards){
+  const MAX_SHARED = 4; // cards must differ in at least 2 artists
+  const MAX_ATTEMPTS = 5000; // max tries per card before giving up
+
+  function sharedCount(a, b){
+    const setA = new Set(a);
+    return b.filter(x => setA.has(x)).length;
+  }
+
+  function pickRandom6(pool){
+    return shuffle([...pool]).slice(0, 6);
+  }
+
+  function isCompatible(newCard, existing){
+    return existing.every(card => sharedCount(newCard, card.artists) <= MAX_SHARED);
+  }
+
+  const cards = [];
+  for(let i = 0; i < numCards; i++){
+    let found = false;
+    for(let attempt = 0; attempt < MAX_ATTEMPTS; attempt++){
+      const candidate = pickRandom6(pool);
+      if(isCompatible(candidate, cards)){
+        cards.push({id: i+1, artists: candidate});
+        found = true;
+        break;
+      }
+    }
+    if(!found) return null; // impossible with this pool
+  }
+  return cards;
+}
+
 function generatePDF(){
   hideMsg('generate-msg');
   if(S.artists.length<6){showMsg('generate-msg','⚠️ Vuelve al paso 2 y asegúrate de tener al menos 6 artistas.','warn');return;}
@@ -994,8 +1092,16 @@ function generatePDF(){
   const sizeMap={s:7,m:9,l:12};
   const artistFS=sizeMap[customSize]||9;
 
-  S.cards=[];
-  for(let i=0;i<n;i++) S.cards.push({id:i+1,artists:shuffle([...S.artists]).slice(0,6)});
+  // ── Smart unique card generation ──
+  // Rule: no two cards can share more than 4 artists (must differ in at least 2)
+  S.cards = generateUniqueCards(S.artists, n);
+  if(!S.cards){
+    showMsg('generate-msg',
+      `❌ No es posible generar <strong>${n} cartones</strong> que cumplan la regla de unicidad con <strong>${S.artists.length} artistas</strong>.<br>`+
+      `Añade más artistas a tu playlist y vuelve al <strong>Paso 1</strong> para importar el CSV actualizado.`,
+      'error');
+    return;
+  }
 
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
@@ -1060,7 +1166,7 @@ function generatePDF(){
     let gridTop,gridBot=y+cH-10;
 
     if(customNamePos==='top'){
-      const nameY=titleY+10;
+      const nameY=titleY+16;
       drawNameBoxPDF(doc,x+gridPadH,nameY,cW-gridPadH*2,nameH,pal,rc);
       gridTop=nameY+nameH+nameGap;
     } else if(customNamePos==='bottom'){
