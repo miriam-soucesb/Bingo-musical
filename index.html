@@ -231,6 +231,9 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
               </li>
             </ol>
           </div>
+          <div class="msg msg-info" style="margin-bottom:0.875rem;">
+            💾 <strong>Guarda el archivo CSV</strong> que vas a importar — lo necesitarás también cuando vayas a jugar la partida para que el sistema identifique correctamente los artistas.
+          </div>
           <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;">
             📄 Cargar CSV de Exportify
             <input type="file" accept=".csv" class="hidden" onchange="importCSV(event)"/>
@@ -481,8 +484,28 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
       </ul>
     </div>
 
+    <!-- Cargar CSV -->
+    <div class="step-card" id="play-csv-card" style="margin-bottom:1.25rem;border-color:rgba(0,229,255,0.2);">
+      <div class="step-header">
+        <span class="step-num step-num-active" style="background:var(--cool);color:#080a12;">1</span>
+        <span class="step-title-txt" style="color:var(--cool);font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:0.04em;">Cargar CSV de la partida</span>
+      </div>
+      <div style="padding:0 1.5rem 1.5rem;">
+        <p style="font-size:0.84rem;color:#64748b;margin-bottom:0.875rem;">Carga el mismo CSV de Exportify que usaste para generar los cartones. Así el sistema identificará correctamente los artistas que suenen.</p>
+        <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;">
+          📄 Cargar CSV de la partida
+          <input type="file" accept=".csv" class="hidden" onchange="loadPlayCSV(event)"/>
+        </label>
+        <div id="play-csv-msg" class="hidden" style="margin-top:0.75rem;"></div>
+      </div>
+    </div>
+
     <!-- Conectar Spotify -->
     <div class="connect-card" id="connect-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;">
+        <span class="step-num step-num-pending" id="spotify-step-num" style="background:rgba(255,255,255,0.08);color:#475569;">2</span>
+        <span style="font-size:0.78rem;font-weight:600;color:#475569;letter-spacing:0.07em;text-transform:uppercase;">Conectar Spotify</span>
+      </div>
       <p style="font-size:0.84rem;color:#64748b;margin-bottom:1rem;">Conecta tu cuenta de Spotify Premium para que el sistema detecte qué artista está sonando en tiempo real.</p>
       <button class="btn btn-green" style="width:100%;font-size:1rem;padding:14px;" onclick="spotifyLogin()">
         Conectar con Spotify
@@ -1405,6 +1428,38 @@ function drawGridPDF(doc,card,x,y,cW,cH,gridTop,artistFS,pal,rc,gridBotOverride)
 }
 
 // ══════════════════════════════════════
+// PLAY PHASE CSV LOAD
+// ══════════════════════════════════════
+function loadPlayCSV(ev){
+  const file=ev.target.files[0]; ev.target.value=''; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const lines=e.target.result.split('\n');
+      const header=parseCSV(lines[0]);
+      const candidates=['artist name(s)','artist names','artists','artist'];
+      let col=-1;
+      header.forEach((h,i)=>{if(col===-1&&candidates.includes(h.toLowerCase().trim()))col=i;});
+      if(col===-1){ showMsg('play-csv-msg','❌ No se encontró la columna de artistas. ¿Es el CSV correcto?','error'); return; }
+      const raw=[];
+      for(let i=1;i<lines.length;i++){
+        const l=lines[i].trim(); if(!l) continue;
+        const cols=parseCSV(l);
+        const cell=norm(cols[col]||''); if(!cell) continue;
+        cell.split(/\s*;\s*/).forEach(a=>{const n=norm(a);if(n)raw.push(n);});
+      }
+      if(!raw.length){ showMsg('play-csv-msg','⚠️ No se encontraron artistas en el CSV.','warn'); return; }
+      S.artists=dedup(raw);
+      // Activate spotify step visually
+      const sn=$('spotify-step-num');
+      if(sn){sn.style.background='var(--neon)';sn.style.color='#080a12';}
+      showMsg('play-csv-msg',`✅ ${S.artists.length} artistas cargados. Ahora conecta Spotify.`,'ok');
+    }catch(err){ showMsg('play-csv-msg',`❌ Error: ${err.message}`,'error'); }
+  };
+  reader.readAsText(file,'UTF-8');
+}
+
+// ══════════════════════════════════════
 // SPOTIFY OAUTH PKCE
 // ══════════════════════════════════════
 async function genVerifier(len=128){
@@ -1512,9 +1567,14 @@ async function pollNow(){
     if(tid===S.lastTrackId)return;
     S.lastTrackId=tid;
 
-    const matched=matchArtist(spArtists);
-    if(matched) addPlayed(matched,tname);
-    else $('np-status').textContent=`${spArtists.join(' & ')} — no está en el pool de esta partida`;
+    if(S.artists.length===0){
+      // No pool loaded — register all artists directly
+      spArtists.forEach(a=>addPlayed(a,tname));
+    } else {
+      const matched=matchArtist(spArtists);
+      if(matched) addPlayed(matched,tname);
+      else $('np-status').textContent=`${spArtists.join(' & ')} — no está en el pool de esta partida`;
+    }
 
   }catch(e){}
 }
