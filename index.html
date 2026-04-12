@@ -326,7 +326,7 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
                 📐 Tamaño recomendado: <strong>600 × 120 px</strong> en PNG con fondo transparente o del color de tu paleta. La imagen sustituirá al título en todos los cartones.
               </div>
               <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;gap:8px;">
-                🖼️ Subir imagen PNG
+                Subir imagen PNG
                 <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="loadTitleImage(event)"/>
               </label>
               <div id="title-img-msg" class="hidden msg msg-warn" style="margin-top:0.75rem;"></div>
@@ -444,6 +444,17 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
       </div>
     </div>
 
+    <!-- ── STEP 6: A jugar ── -->
+    <div id="step6-play" class="hidden" style="margin-top:1rem;">
+      <div style="background:linear-gradient(135deg,rgba(30,215,96,0.08),rgba(240,255,68,0.05));border:1px solid rgba(30,215,96,0.3);border-radius:18px;padding:1.5rem;text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.05em;color:#86efac;margin-bottom:0.5rem;">Paso 6</div>
+        <p style="font-size:0.9rem;color:#64748b;margin-bottom:1.25rem;">¡Cartones listos! Cuando hayas repartido los cartones impresos, conecta Spotify y empieza la partida.</p>
+        <button class="btn btn-green" style="font-size:1.05rem;padding:14px 32px;" onclick="goTo('phase2')">
+          🎶 ¡A jugar!
+        </button>
+      </div>
+    </div>
+
 
   </div>
 </div>
@@ -464,7 +475,7 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
       <div class="notice-title">⚠️ Instrucciones para el host</div>
       <ul class="notice-list">
         <li>Abre la app de <strong>Spotify en tu móvil o PC</strong> — no este navegador</li>
-        <li><strong>Reproduce únicamente las canciones de la playlist con la que generaste los cartones</strong>, ni una más ni una menos</li>
+        <li>Reproduce únicamente las canciones de la playlist con la que generaste los cartones, ni una más ni una menos</li>
         <li>No modifiques esa playlist entre que generaste los cartones y ahora — si añadiste o eliminaste canciones el sistema fallará</li>
         <li>Esta web detectará automáticamente cada artista que suene cada 5 segundos</li>
       </ul>
@@ -474,7 +485,7 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
     <div class="connect-card" id="connect-card">
       <p style="font-size:0.84rem;color:#64748b;margin-bottom:1rem;">Conecta tu cuenta de Spotify Premium para que el sistema detecte qué artista está sonando en tiempo real.</p>
       <button class="btn btn-green" style="width:100%;font-size:1rem;padding:14px;" onclick="spotifyLogin()">
-        🟢 Conectar con Spotify
+        Conectar con Spotify
       </button>
       <div style="margin-top:0.875rem;">
         <button onclick="toggleFallback()" style="background:none;border:none;color:#334155;font-size:0.76rem;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;">¿Problemas con el login? Pegar token manualmente</button>
@@ -1359,6 +1370,8 @@ function generatePDF(){
   showMsg('generate-msg',
     `✅ PDF descargado con <strong>${n} cartón${n!==1?'es':''}</strong> (${Math.ceil(n/2)} hoja${Math.ceil(n/2)!==1?'s':''} A4). ¡Imprímelos y repártelos!`,
     'ok');
+  // Show step 6 — go to play
+  $('step6-play').classList.remove('hidden');
 }
 
 function drawNameBoxPDF(doc,x,y,w,h,pal,rc){
