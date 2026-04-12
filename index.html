@@ -385,8 +385,8 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
               <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Recuadro "Propiedad de…"</span>
             </div>
             <div class="opt-row">
-              <button class="opt-btn sel" onclick="selectNamePos('top',this)">Arriba</button>
-              <button class="opt-btn" onclick="selectNamePos('bottom',this)">Abajo</button>
+              <button class="opt-btn" onclick="selectNamePos('top',this)">Arriba</button>
+              <button class="opt-btn sel" onclick="selectNamePos('bottom',this)">Abajo</button>
               <button class="opt-btn" onclick="selectNamePos('none',this)">Sin recuadro</button>
             </div>
           </div>
@@ -456,18 +456,17 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
 
     <div class="phase-header">
       <button class="back-btn" onclick="goTo('home')">← Inicio</button>
-      <h1 class="phase-title">🎮 ¡A <span style="color:var(--neon)">Jugar!</span></h1>
+      <h1 class="phase-title">🎶 ¡A <span style="color:var(--neon)">Jugar!</span></h1>
     </div>
 
     <!-- Aviso importante -->
     <div class="notice-box">
       <div class="notice-title">⚠️ Instrucciones para el host</div>
       <ul class="notice-list">
-        <li>Abre <strong>Spotify en tu móvil o PC</strong> — la app oficial, no este navegador</li>
-        <li>Reproduce <strong>únicamente las canciones de la playlist</strong> con la que generaste los cartones — ni una canción más ni una menos</li>
-        <li><strong style="color:#fca5a5">No modifiques esa playlist</strong> entre que generaste los cartones y ahora: si añadiste o eliminaste canciones, los artistas nuevos no aparecerán en los cartones y el sistema fallará</li>
+        <li>Abre la app de <strong>Spotify en tu móvil o PC</strong> — no este navegador</li>
+        <li><strong>Reproduce únicamente las canciones de la playlist con la que generaste los cartones</strong>, ni una más ni una menos</li>
+        <li>No modifiques esa playlist entre que generaste los cartones y ahora — si añadiste o eliminaste canciones el sistema fallará</li>
         <li>Esta web detectará automáticamente cada artista que suene cada 5 segundos</li>
-        <li>Si reproduces canciones de otra playlist, <strong style="color:#fca5a5">el sistema no las registrará</strong></li>
       </ul>
     </div>
 
@@ -896,7 +895,7 @@ let selectedPalette = PALETTES[0];
 let customFont     = 'Limelight';
 let customFontCSS  = 'Limelight';
 let customSize     = 'm';   // s | m | l
-let customNamePos  = 'top'; // top | bottom | none
+let customNamePos  = 'bottom'; // top | bottom | none
 let customBg       = 'solid'; // solid | dots | stripes
 
 function selectFont(font, css, el){
@@ -1283,11 +1282,17 @@ function generatePDF(){
 
     // Title — text or image
     let titleY;
-    if(titleMode==='img' && titleImageData){
-      const imgH=22, imgW=Math.min(cW-10, 180);
+    if(titleMode==='img' && titleImgObj){
+      // Preserve aspect ratio from the cached image object
+      const naturalW=titleImgObj.naturalWidth||600;
+      const naturalH=titleImgObj.naturalHeight||120;
+      const ratio=naturalW/naturalH;
+      const maxW=cW-10, maxH=28;
+      let imgW=maxW, imgH=maxW/ratio;
+      if(imgH>maxH){ imgH=maxH; imgW=imgH*ratio; }
       const imgX=x+(cW-imgW)/2, imgY=y+8;
       try{ doc.addImage(titleImageData,'PNG',imgX,imgY,imgW,imgH); }catch(e){}
-      titleY=imgY+imgH+4;
+      titleY=imgY+imgH+6;
     } else {
       doc.setFont('helvetica','bold');
       doc.setFontSize(18);
@@ -1347,7 +1352,10 @@ function generatePDF(){
     }
   });
 
-  doc.save('bingo-musical-cartones.pdf');
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const fname=`Cartones bingo musical ${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}h${pad(now.getMinutes())}m.pdf`;
+  doc.save(fname);
   showMsg('generate-msg',
     `✅ PDF descargado con <strong>${n} cartón${n!==1?'es':''}</strong> (${Math.ceil(n/2)} hoja${Math.ceil(n/2)!==1?'s':''} A4). ¡Imprímelos y repártelos!`,
     'ok');
