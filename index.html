@@ -177,7 +177,7 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
   <div style="max-width:600px;width:100%;margin:0 auto;padding:3rem 1.5rem;display:flex;flex-direction:column;align-items:center;">
     <div class="home-logo">BINGO<br><span>MUSICAL</span></div>
     <p class="home-sub">Crea los cartones · Conecta Spotify · ¡A jugar!</p>
-    <p style="font-size:0.7rem;color:#334155;margin-top:0.5rem;">⚖️ Uso personal y no comercial · No afiliado a Spotify</p>
+
     <div class="home-cards">
       <button class="hbtn hbtn-a" onclick="goTo('phase1')">
         <span class="hbtn-icon">📝</span>
@@ -304,25 +304,23 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
           <span class="step-summary hidden" id="ss4"></span>
         </div>
         <div class="step-body">
-          <p class="step-desc">Dale tu toque personal. La previsualización se actualiza en tiempo real.</p>
+          <p class="step-desc">Dale tu toque personal. La previsualización se actualiza en tiempo real con cada cambio.</p>
 
-          <!-- Título -->
-          <div style="margin-bottom:1.25rem;">
-            <label class="lbl">Título de la partida</label>
-
-            <!-- Toggle text/image -->
+          <!-- BLOQUE 1: Título -->
+          <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
+              <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
+              <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Título del cartón</span>
+            </div>
+            <p style="font-size:0.8rem;color:#475569;margin-bottom:0.75rem;">Elige una opción — texto escrito o imagen PNG. Solo una de las dos.</p>
             <div class="opt-row" style="margin-bottom:0.875rem;">
-              <button class="opt-btn sel" id="title-mode-text" onclick="setTitleMode('text',this)">✏️ Texto</button>
+              <button class="opt-btn sel" id="title-mode-text" onclick="setTitleMode('text',this)">✏️ Texto escrito</button>
               <button class="opt-btn" id="title-mode-img" onclick="setTitleMode('img',this)">🖼️ Imagen PNG</button>
             </div>
-
-            <!-- Text mode -->
             <div id="title-text-wrap">
               <input type="text" id="custom-title" placeholder="Bingo Musical" maxlength="40" oninput="renderPreview()"/>
               <p style="font-size:0.73rem;color:#334155;margin-top:4px;">Se respetan mayúsculas y minúsculas tal como lo escribas.</p>
             </div>
-
-            <!-- Image mode -->
             <div id="title-img-wrap" class="hidden">
               <div class="msg msg-info" style="margin-bottom:0.75rem;">
                 📐 Tamaño recomendado: <strong>600 × 120 px</strong> en PNG con fondo transparente o del color de tu paleta. La imagen sustituirá al título en todos los cartones.
@@ -331,6 +329,7 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
                 🖼️ Subir imagen PNG
                 <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="loadTitleImage(event)"/>
               </label>
+              <div id="title-img-msg" class="hidden msg msg-warn" style="margin-top:0.75rem;"></div>
               <div id="title-img-preview" class="hidden" style="margin-top:0.75rem;">
                 <img id="title-img-el" style="max-width:100%;border-radius:8px;border:1px solid rgba(255,255,255,0.1);" alt="Preview título"/>
                 <button onclick="clearTitleImage()" style="background:none;border:none;color:#64748b;font-size:0.78rem;cursor:pointer;text-decoration:underline;margin-top:4px;display:block;font-family:'DM Sans',sans-serif;">Quitar imagen</button>
@@ -338,35 +337,40 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
             </div>
           </div>
 
-          <!-- Paleta -->
-          <div style="margin-bottom:1.25rem;">
-            <label class="lbl">Paleta de colores</label>
+          <!-- BLOQUE 2: Paleta -->
+          <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
+              <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
+              <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Paleta de colores</span>
+            </div>
             <div id="palette-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
           </div>
 
-          <!-- Tipografía -->
-          <div style="margin-bottom:1.25rem;">
-            <label class="lbl">Tipografía</label>
-            <div class="opt-row" id="font-opts">
+          <!-- BLOQUE 3: Tipografía -->
+          <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
+              <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
+              <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Tipografía</span>
+            </div>
+            <div class="opt-row" id="font-opts" style="margin-bottom:0.75rem;">
               <button class="opt-btn sel" onclick="selectFont('Limelight','Limelight',this)">Limelight</button>
               <button class="opt-btn" onclick="selectFont('Plaster','Plaster',this)">Plaster</button>
               <button class="opt-btn" onclick="selectFont('Montserrat','Montserrat',this)">Montserrat</button>
               <button class="opt-btn" onclick="selectFont('Alfa Slab One','Alfa Slab One',this)">Alfa Slab One</button>
             </div>
-          </div>
-
-          <!-- Tipografía artistas distinta -->
-          <div style="margin-bottom:1.25rem;">
             <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
               <input type="checkbox" id="diff-font" onchange="renderPreview()"
                 style="width:16px;height:16px;accent-color:var(--neon);cursor:pointer;flex-shrink:0;"/>
-              <span style="font-size:0.84rem;color:#94a3b8;">Usar tipografía distinta para los artistas <span style="color:#64748b;">(Verdana)</span></span>
+              <span style="font-size:0.82rem;color:#94a3b8;">Tipografía distinta para los artistas <span style="color:#64748b;">(Verdana)</span></span>
             </label>
           </div>
 
-          <!-- Tamaño artistas -->
-          <div style="margin-bottom:1.25rem;">
-            <label class="lbl">Tamaño de los artistas</label>
+          <!-- BLOQUE 4: Tamaño artistas -->
+          <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
+              <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">4</span>
+              <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Tamaño de los artistas</span>
+            </div>
             <div class="opt-row">
               <button class="opt-btn" onclick="selectSize('s',this)">Pequeño</button>
               <button class="opt-btn sel" onclick="selectSize('m',this)">Mediano</button>
@@ -374,9 +378,12 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
             </div>
           </div>
 
-          <!-- Posición nombre -->
-          <div style="margin-bottom:1.25rem;">
-            <label class="lbl">Recuadro "Propiedad de..."</label>
+          <!-- BLOQUE 5: Recuadro nombre -->
+          <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
+              <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">5</span>
+              <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Recuadro "Propiedad de…"</span>
+            </div>
             <div class="opt-row">
               <button class="opt-btn sel" onclick="selectNamePos('top',this)">Arriba</button>
               <button class="opt-btn" onclick="selectNamePos('bottom',this)">Abajo</button>
@@ -384,9 +391,12 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
             </div>
           </div>
 
-          <!-- Fondo -->
-          <div style="margin-bottom:1.25rem;">
-            <label class="lbl">Fondo del cartón</label>
+          <!-- BLOQUE 6: Fondo -->
+          <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
+              <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">6</span>
+              <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Fondo del cartón</span>
+            </div>
             <div class="opt-row">
               <button class="opt-btn sel" onclick="selectBg('solid',this)">Liso</button>
               <button class="opt-btn" onclick="selectBg('dots',this)">Polka dots</button>
@@ -396,7 +406,7 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
           </div>
 
           <!-- Preview -->
-          <label class="lbl">Previsualización</label>
+          <label class="lbl" style="margin-bottom:0.5rem;">Previsualización en tiempo real</label>
           <div style="border-radius:14px;overflow:hidden;margin-bottom:1rem;border:1px solid rgba(255,255,255,0.08);">
             <canvas id="preview-canvas" style="width:100%;display:block;border-radius:14px;"></canvas>
           </div>
@@ -806,6 +816,7 @@ function confirmPlayers(){
 // ══════════════════════════════════════
 let titleMode = 'text'; // 'text' | 'img'
 let titleImageData = null; // base64 data URL
+let titleImgObj = null; // cached Image object
 
 function setTitleMode(mode, el){
   titleMode = mode;
@@ -824,14 +835,45 @@ function loadTitleImage(ev){
     titleImageData = e.target.result;
     $('title-img-el').src = titleImageData;
     $('title-img-preview').classList.remove('hidden');
-    renderPreview();
+    // Preload image object and render preview once ready
+    const img = new Image();
+    img.onload = () => {
+      titleImgObj = img;
+      // Check proportions — recommended 600x120 (ratio 5:1)
+      const w = img.naturalWidth, h = img.naturalHeight;
+      const ratio = w / h;
+      const minRatio = 2.5, maxRatio = 9;
+      const msgEl = $('title-img-msg');
+      if(!msgEl) {
+        // Create message element if not exists
+      }
+      let warning = '';
+      if(ratio < minRatio){
+        warning = `⚠️ La imagen es demasiado cuadrada (${w}×${h}px). El tamaño recomendado es <strong>600×120 px</strong> (proporción 5:1 horizontal). Puede verse recortada o desproporcionada en el cartón.`;
+      } else if(ratio > maxRatio){
+        warning = `⚠️ La imagen es demasiado alargada (${w}×${h}px). El tamaño recomendado es <strong>600×120 px</strong> (proporción 5:1). Puede verse muy fina en el cartón.`;
+      } else if(w < 300){
+        warning = `⚠️ La imagen es pequeña (${w}×${h}px) y puede verse pixelada al imprimir. El tamaño recomendado es <strong>600×120 px</strong> o superior.`;
+      }
+      if(msgEl){
+        if(warning){ msgEl.innerHTML = warning; msgEl.classList.remove('hidden'); }
+        else { msgEl.classList.add('hidden'); }
+      }
+      renderPreview();
+      setTimeout(renderPreview, 80);
+    };
+    img.onerror = () => console.warn('Image load error');
+    img.src = titleImageData;
   };
   reader.readAsDataURL(file);
 }
 
 function clearTitleImage(){
   titleImageData = null;
+  titleImgObj = null;
   $('title-img-preview').classList.add('hidden');
+  const msgEl=$('title-img-msg');
+  if(msgEl) msgEl.classList.add('hidden');
   renderPreview();
 }
 
@@ -950,13 +992,24 @@ function renderPreview(){
   const diffFont=$('diff-font')&&$('diff-font').checked;
   const ffArtist=diffFont?'Verdana,sans-serif':ff;
 
-  // Title — big, generous top padding
+  // Title — image or text
   const titleSize=30;
-  ctx.fillStyle=r(pal.text1);
-  ctx.font=`bold ${titleSize}px ${ff}`;
-  ctx.textAlign='center';
-  const titleY=mY+titleSize+38;
-  ctx.fillText(title,W/2,titleY);
+  let titleY;
+  if(titleMode==='img' && titleImgObj && titleImgObj.complete){
+    const maxImgW=cW-20, maxImgH=80;
+    const ratio=titleImgObj.naturalWidth/Math.max(titleImgObj.naturalHeight,1);
+    const imgH=Math.min(maxImgH, maxImgW/ratio);
+    const imgW=imgH*ratio;
+    const imgX=(W-imgW)/2, imgY=mY+18;
+    ctx.drawImage(titleImgObj,imgX,imgY,imgW,imgH);
+    titleY=imgY+imgH+10;
+  } else {
+    ctx.fillStyle=r(pal.text1);
+    ctx.font=`bold ${titleSize}px ${ff}`;
+    ctx.textAlign='center';
+    titleY=mY+titleSize+38;
+    ctx.fillText(title,W/2,titleY);
+  }
 
   // Layout
   const padH=18; // horizontal padding inside card for grid
@@ -1231,7 +1284,7 @@ function generatePDF(){
     // Title — text or image
     let titleY;
     if(titleMode==='img' && titleImageData){
-      const imgH=14, imgW=Math.min(cW-20, 120);
+      const imgH=22, imgW=Math.min(cW-10, 180);
       const imgX=x+(cW-imgW)/2, imgY=y+8;
       try{ doc.addImage(titleImageData,'PNG',imgX,imgY,imgW,imgH); }catch(e){}
       titleY=imgY+imgH+4;
