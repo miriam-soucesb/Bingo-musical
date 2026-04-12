@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>🎶 Bingo Musical</title>
+<title>ERA — The game your playlist has always deserved.</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Limelight&family=Plaster&family=Montserrat:wght@700;900&family=Alfa+Slab+One&display=swap" rel="stylesheet"/>
@@ -197,8 +197,12 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
 ════════════════════════════════ -->
 <div id="screen-home" class="screen active">
   <div style="max-width:600px;width:100%;margin:0 auto;padding:3rem 1.5rem;display:flex;flex-direction:column;align-items:center;">
-    <div class="home-logo">BINGO<br><span>MUSICAL</span></div>
-    <p class="home-sub">Crea los cartones · Conecta Spotify · ¡A jugar!</p>
+    <div style="max-width:340px;width:85%;margin:0 auto 0.5rem;">
+  <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTcxIiBoZWlnaHQ9IjI1OCIgdmlld0JveD0iMCAwIDU3MSAyNTgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xODkuNDUxIDAuMDA0ODgyODFMMTg5LjM3MyAxMi4yMzA1QzE3OS4wODcgMTEuOTMwMyAxNjcuNjU3IDEyLjE1MjIgMTU3LjI3MiAxMi4xNTE0TDk4LjI3NTQgMTIuMTYyMUw5OC4zMjMzIDE2NC44NjRMMTgyLjc1MSAxNjQuODJDMTgyLjk3MyAxOTIuMDIxIDE3Ni4yMTEgMjEwLjM3NyAxNTcuNTU0IDIzMC41NTFDMTUyLjYyNCAyMzUuNDE2IDE0Ny43OSAyMzkuNTY1IDE0MS45MzggMjQzLjM0NkMxMjAuODcxIDI1Ni43OTIgOTUuMjkxMyAyNjEuMjI0IDcwLjkyNTggMjU1LjY0N0M0Ny4yOTczIDI1MC41MTQgMjYuNzEwOCAyMzYuMTI2IDEzLjc3MDUgMjE1LjdDMi4wOTIxNyAxOTcuMjA5IC0zLjA2ODQyIDE3My43MDEgMS44NjMzIDE1Mi4yMjNDNi4yMDAzOCAxMzMuOTUzIDE3LjU4NzQgMTE4LjEzOSAzMy41MzkxIDEwOC4yMzJDNTAuMjg4NiA5Ny43ODg1IDY3LjcxNDggOTUuMTEzIDg2Ljc5MiA5OS40NkM4Ni4zMTczIDY2LjczNyA4Ni43OTY1IDMyLjgyMTggODYuNzUzIDBMMTg5LjQ1MSAwLjAwNDg4MjgxWk0xMS43MTY4IDE3NS4yMTlDMTYuOTY1OSAyMTYuNTQzIDQ1Ljg5MDggMjQyLjI4NyA4Ni44MTE1IDI0Ni4xNzJDODYuNzQwMiAyMjMuNTgyIDg2LjEyMjMgMTk3LjQ2NSA4Ni44ODY3IDE3NS4xOTVMMTEuNzE2OCAxNzUuMjE5Wk05OC4zMDQ3IDE3Ni41MzNMOTguMzI2MiAyNDYuMDk2QzExNy45MTkgMjQzLjc2MyAxMzQuMDIyIDIzNy42NTcgMTQ4LjMwMiAyMjMuMzU1QzE2MS4wMjQgMjEwLjQwNiAxNjkuMjk2IDE5NC43MjIgMTcxLjI2MyAxNzYuNTE2TDk4LjMwNDcgMTc2LjUzM1pNODYuODcwMSAxMTEuNzI1Qzc5Ljc0NTQgMTA5LjczMiA3NS4xNTc2IDEwOC45MDggNjcuNzc0NCAxMDkuMjQ1QzM2Ljk5IDExMS43NDEgMTUuNDg2NiAxMzMuMjIyIDExLjU3NDIgMTYzLjYyNEwzMi45MDcyIDE2My42MjlDNTAuNjMwNCAxNjMuNjI4IDY5LjE2NTEgMTYzLjM3MSA4Ni44MjEzIDE2My42ODdDODYuNzczNCAxNDYuNjY0IDg2LjU0NjkgMTI4LjcyNCA4Ni44NzAxIDExMS43MjVaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTY4LjQyMiA2Ny4yODEyTDE4MC4xNTMgNjcuNDE3NEwxODAuMTcgOTMuMDk4M0wxOTkuNDIzIDgwLjgyNzZDMjAxLjYxMiA4NC4xMzg4IDIwMy42OTYgODcuNTE5NSAyMDUuNjY3IDkwLjk2NDZDMTk5LjExIDk1LjM2NDggMTkxLjgzMSA5OS44MTg5IDE4NS4xMyAxMDQuMDk3QzE5MS45MzkgMTA4LjU0OSAxOTguODc5IDExMi41NTMgMjA1LjY1NCAxMTcuMjA0QzIwMy43NDQgMTIwLjM1OCAyMDEuNDAzIDEyMy43NzIgMTk5LjM2NyAxMjYuODg5QzE5Mi45MjMgMTIyLjg5NiAxODYuNTA1IDExOC44NTggMTgwLjExOCAxMTQuNzczTDE3OS45NzkgMTM5Ljk5NUwxNjguMjQgMTQwLjAxM0MxNjguMjEzIDEzMS43NTYgMTY4LjIzMSAxMjMuNSAxNjguMyAxMTUuMjQ0QzE2Mi4wNjEgMTE4Ljg4OSAxNTUuMzc0IDEyMy4yMTkgMTQ5LjE3OCAxMjcuMDQ3QzE0Ny4wNzYgMTIzLjkxIDE0NC45NjYgMTIwLjQ3MyAxNDIuOTE3IDExNy4yNzRMMTYzLjgyMyAxMDMuODU0QzE1Ni45NzUgOTkuNzg0MSAxNDkuNjY1IDk0LjkzNCAxNDIuODkxIDkwLjYzODdDMTQ0LjgwMSA4Ny40MzM4IDE0Ny4wNTUgODQuMDIwOCAxNDkuMDYgODAuODM5TDE2OC40MjcgOTIuODgyNUwxNjguNDIyIDY3LjI4MTJaIiBmaWxsPSIjREQxRjUxIi8+CjxwYXRoIGQ9Ik0zMDIuNjc3IDI1OFYwLjk0OTc0MUgzNzAuOTc5VjI5LjU5MjVIMzMzLjg5VjExMi41ODNIMzYyLjE2NVYxNDEuNTkzSDMzMy44OVYyMjkuMzU3SDM3MC45NzlWMjU4SDMwMi42NzdaTTM4NS41MTUgMjU4VjAuOTQ5NzQxSDQxNi43MjhDNDI3LjAxIDAuOTQ5NzQxIDQzNS45NDYgMy41MjAyNSA0NDMuNTM1IDguNjYxMjZDNDUxLjEyNCAxMy44MDIzIDQ1Ni43NTUgMjEuMjY5IDQ2MC40MjcgMzEuMDYxM0M0NjQuMzQ0IDQwLjYwODkgNDY2LjMwMiA1MS45OTI2IDQ2Ni4zMDIgNjUuMjEyM0M0NjYuMzAyIDg2LjAyMTEgNDYyLjE0MSAxMDEuNjg5IDQ1My44MTcgMTEyLjIxNkM0NDUuNzM4IDEyMi40OTggNDMzLjM3NSAxMjcuNjM5IDQxNi43MjggMTI3LjYzOUg0MTEuOTU1VjEwNi43MDhINDE4LjU2NEM0MjQuMTk1IDEwNi43MDggNDI4LjIzNCAxMDMuNTI1IDQzMC42ODIgOTcuMTZDNDMzLjEzMSA5MC43OTQ5IDQzNC4zNTUgODAuODgwMSA0MzQuMzU1IDY3LjQxNTZDNDM0LjM1NSA1My43MDYyIDQzMy4xMzEgNDMuNjY5IDQzMC42ODIgMzcuMzA0QzQyOC4yMzQgMzAuOTM4OSA0MjQuMTk1IDI3Ljc1NjQgNDE4LjU2NCAyNy43NTY0SDQxNi43MjhWMjU4SDM4NS41MTVaTTQ0Ny45NDIgMjU4QzQ0My4wNDUgMjU4IDQzOS40OTYgMjU2LjUzMSA0MzcuMjkyIDI1My41OTNDNDM1LjA4OSAyNTAuNjU2IDQzMy45ODcgMjQ1Ljg4MiA0MzMuOTg3IDIzOS4yNzJWMTcwLjk3QzQzMy45ODcgMTY0LjM2IDQzMi42NDEgMTU5LjU4NiA0MjkuOTQ4IDE1Ni42NDlDNDI3LjUgMTUzLjcxMSA0MjMuMzM4IDE1Mi4yNDIgNDE3LjQ2MyAxNTIuMjQySDQxMS45NTVWMTMxLjMxMUg0MjUuMTc0QzQzOC4xNDkgMTMxLjMxMSA0NDguMDY0IDEzNC44NjEgNDU0LjkxOSAxNDEuOTZDNDYyLjAxOCAxNDkuMDYgNDY1LjU2OCAxNTkuMzQyIDQ2NS41NjggMTcyLjgwNlYyMzkuNjM5QzQ2NS41NjggMjQzLjU1NiA0NjYuMDU3IDI0Ni45ODQgNDY3LjAzNyAyNDkuOTIxQzQ2OC4wMTYgMjUyLjYxNCA0NjkuNjA3IDI1NC4zMjggNDcxLjgxIDI1NS4wNjJWMjU4SDQ0Ny45NDJaTTQ3Ni43NjIgMjU4TDQ5Ni4yMjUgMC45NDk3NDFINTQ4LjM2OUw1NjcuODMxIDI1OEg1MzYuNjE4TDUzMi45NDYgMTkxLjkwMUw1MzIuNTc5IDE4Ni4zOTNMNTI0LjEzMyAzNS44MzUxSDUyMC40NjFMNTEyLjAxNSAxODYuMzkzVjE5MS45MDFMNTA4LjM0MyAyNThINDc2Ljc2MlpNNTA1Ljc3MiAyMDUuMTIxTDUwNy42MDggMTc2LjQ3OEg1MzcuMzUzTDUzOC44MjEgMjA1LjEyMUg1MDUuNzcyWiIgZmlsbD0iI0YwRkY0NCIvPgo8L3N2Zz4=" 
+       alt="ERA — The game your playlist has always deserved." 
+       style="width:100%;height:auto;display:block;" />
+</div>
+    <p class="home-sub">Your playlist. Your people. Your game.</p>
 
     <div class="home-cards">
       <button class="hbtn hbtn-a" onclick="goTo('phase1')">
@@ -231,7 +235,7 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
 
     <div class="phase-header">
       <button class="back-btn" onclick="goTo('home')">← Inicio</button>
-      <h1 class="phase-title">📝 Generar <span style="color:var(--neon)">Partida</span></h1>
+      <h1 class="phase-title">📝 Generar <span style="color:var(--neon)">partida</span></h1>
     </div>
 
     <!-- ── STEP 1: Importar CSV ── -->
@@ -510,7 +514,7 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
 
     <div class="phase-header">
       <button class="back-btn" onclick="goTo('home')">← Inicio</button>
-      <h1 class="phase-title">🎶 ¡A <span style="color:var(--neon)">Jugar!</span></h1>
+      <h1 class="phase-title">🎶 ¡A <span style="color:var(--neon)">jugar!</span></h1>
     </div>
 
     <!-- AVISO -->
@@ -1460,7 +1464,7 @@ function generatePDF(){
 
   const now=new Date();
   const pad=n=>String(n).padStart(2,'0');
-  const fname=`Cartones bingo musical ${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}h${pad(now.getMinutes())}m.pdf`;
+  const fname=`ERA - Cartones ${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}h${pad(now.getMinutes())}m.pdf`;
   doc.save(fname);
   showMsg('generate-msg',
     `✅ PDF descargado con <strong>${n} cartón${n!==1?'es':''}</strong> (${Math.ceil(n/2)} hoja${Math.ceil(n/2)!==1?'s':''} A4). ¡Imprímelos y repártelos!`,
@@ -1536,7 +1540,7 @@ function exportPlayedPDF(){
     y+=9;
   });
 
-  const fname=`Artistas sonados ${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}h${pad(now.getMinutes())}m.pdf`;
+  const fname=`ERA - Artistas sonados ${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}h${pad(now.getMinutes())}m.pdf`;
   doc.save(fname);
 }
 
@@ -1822,12 +1826,12 @@ renderPaletteGrid();
 
     <div class="phase-header">
       <button class="back-btn" onclick="goTo('home')">← Inicio</button>
-      <h1 class="phase-title">📖 <span style="color:var(--neon)">Guía</span> de uso</h1>
+      <h1 class="phase-title">📖 <span style="color:var(--neon)">Guía</span> de uso · ERA</h1>
     </div>
 
     <!-- Qué es -->
     <div style="margin-bottom:1.5rem;">
-      <p style="font-size:0.93rem;color:#94a3b8;line-height:1.7;">Bingo Musical convierte tu playlist de Spotify en un juego de bingo para fiestas y reuniones. El sistema detecta automáticamente cada artista que suena y lo marca en tiempo real.</p>
+      <p style="font-size:0.93rem;color:#94a3b8;line-height:1.7;">ERA convierte tu playlist de Spotify en un juego de bingo musical para fiestas y reuniones. El sistema detecta automáticamente cada artista que suena y lo registra en tiempo real. <em>Every playlist tells a story. Play yours.</em></p>
     </div>
 
     <!-- Roles -->
