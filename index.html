@@ -309,8 +309,33 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
           <!-- Título -->
           <div style="margin-bottom:1.25rem;">
             <label class="lbl">Título de la partida</label>
-            <input type="text" id="custom-title" placeholder="Bingo Musical" maxlength="40" oninput="renderPreview()"/>
-            <p style="font-size:0.73rem;color:#334155;margin-top:4px;">Se respetan mayúsculas y minúsculas tal como lo escribas.</p>
+
+            <!-- Toggle text/image -->
+            <div class="opt-row" style="margin-bottom:0.875rem;">
+              <button class="opt-btn sel" id="title-mode-text" onclick="setTitleMode('text',this)">✏️ Texto</button>
+              <button class="opt-btn" id="title-mode-img" onclick="setTitleMode('img',this)">🖼️ Imagen PNG</button>
+            </div>
+
+            <!-- Text mode -->
+            <div id="title-text-wrap">
+              <input type="text" id="custom-title" placeholder="Bingo Musical" maxlength="40" oninput="renderPreview()"/>
+              <p style="font-size:0.73rem;color:#334155;margin-top:4px;">Se respetan mayúsculas y minúsculas tal como lo escribas.</p>
+            </div>
+
+            <!-- Image mode -->
+            <div id="title-img-wrap" class="hidden">
+              <div class="msg msg-info" style="margin-bottom:0.75rem;">
+                📐 Tamaño recomendado: <strong>600 × 120 px</strong> en PNG con fondo transparente o del color de tu paleta. La imagen sustituirá al título en todos los cartones.
+              </div>
+              <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;gap:8px;">
+                🖼️ Subir imagen PNG
+                <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="loadTitleImage(event)"/>
+              </label>
+              <div id="title-img-preview" class="hidden" style="margin-top:0.75rem;">
+                <img id="title-img-el" style="max-width:100%;border-radius:8px;border:1px solid rgba(255,255,255,0.1);" alt="Preview título"/>
+                <button onclick="clearTitleImage()" style="background:none;border:none;color:#64748b;font-size:0.78rem;cursor:pointer;text-decoration:underline;margin-top:4px;display:block;font-family:'DM Sans',sans-serif;">Quitar imagen</button>
+              </div>
+            </div>
           </div>
 
           <!-- Paleta -->
@@ -777,6 +802,40 @@ function confirmPlayers(){
 }
 
 // ══════════════════════════════════════
+// TITLE MODE (text / image)
+// ══════════════════════════════════════
+let titleMode = 'text'; // 'text' | 'img'
+let titleImageData = null; // base64 data URL
+
+function setTitleMode(mode, el){
+  titleMode = mode;
+  document.querySelectorAll('#title-mode-text,#title-mode-img').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  $('title-text-wrap').classList.toggle('hidden', mode==='img');
+  $('title-img-wrap').classList.toggle('hidden', mode==='text');
+  renderPreview();
+}
+
+function loadTitleImage(ev){
+  const file = ev.target.files[0]; ev.target.value='';
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    titleImageData = e.target.result;
+    $('title-img-el').src = titleImageData;
+    $('title-img-preview').classList.remove('hidden');
+    renderPreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearTitleImage(){
+  titleImageData = null;
+  $('title-img-preview').classList.add('hidden');
+  renderPreview();
+}
+
+// ══════════════════════════════════════
 // PALETTES — basadas en paletas Pantone
 // ══════════════════════════════════════
 const PALETTES = [
@@ -1117,17 +1176,34 @@ function generatePDF(){
     doc.setFillColor(...rc(pal.card));
     doc.roundedRect(x,y,cW,cH,10,10,'F');
 
-    // Background pattern
-    if(customBg==='dots'){
-      doc.setFillColor(...rc(pal.cell2));
-      const spacing=14;
-      for(let dx=spacing/2;dx<cW;dx+=spacing)
-        for(let dy=spacing/2;dy<cH;dy+=spacing)
-          doc.circle(x+dx,y+dy,4,'F');
-    } else if(customBg==='stripes'){
-      doc.setFillColor(...rc(pal.cell2));
-      const sw=7,gap=14;
-      for(let dx=0;dx<cW;dx+=gap) doc.rect(x+dx,y,sw,cH,'F');
+    // Background pattern — clipped to card area, with soft color mix for transparency effect
+    if(customBg==='dots' || customBg==='stripes'){
+      // Mix cell2 color with card bg to simulate transparency (no native alpha in jsPDF)
+      const mix = (a,b,t) => Math.round(a + (b-a)*t);
+      const alpha = 0.18; // same visual weight as canvas
+      const mc = pal.cell2.map((v,i) => mix(pal.card[i], v, alpha));
+      doc.setFillColor(...rc(mc));
+
+      if(customBg==='dots'){
+        const spacing=14;
+        for(let dx=spacing/2;dx<cW;dx+=spacing){
+          for(let dy=spacing/2;dy<cH;dy+=spacing){
+            // Only draw if circle center is within card bounds
+            const cx=x+dx, cy=y+dy, r=4;
+            if(cx-r>=x && cx+r<=x+cW && cy-r>=y && cy+r<=y+cH){
+              doc.circle(cx,cy,r,'F');
+            }
+          }
+        }
+      } else if(customBg==='stripes'){
+        const sw=7,gap=14;
+        for(let dx=0;dx<cW;dx+=gap){
+          // Clip stripe to card bounds
+          const sx=x+dx;
+          const sw2=Math.min(sw, x+cW-sx);
+          if(sw2>0) doc.rect(sx,y,sw2,cH,'F');
+        }
+      }
     }
 
     // Border or waves
@@ -1152,12 +1228,20 @@ function generatePDF(){
       doc.roundedRect(x,y,cW,cH,10,10,'S');
     }
 
-    // Title — generous top margin, bigger
-    doc.setFont('helvetica','bold');
-    doc.setFontSize(18);
-    doc.setTextColor(...rc(pal.text1));
-    const titleY=y+22;
-    doc.text(title,x+cW/2,titleY,{align:'center'});
+    // Title — text or image
+    let titleY;
+    if(titleMode==='img' && titleImageData){
+      const imgH=14, imgW=Math.min(cW-20, 120);
+      const imgX=x+(cW-imgW)/2, imgY=y+8;
+      try{ doc.addImage(titleImageData,'PNG',imgX,imgY,imgW,imgH); }catch(e){}
+      titleY=imgY+imgH+4;
+    } else {
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(18);
+      doc.setTextColor(...rc(pal.text1));
+      titleY=y+22;
+      doc.text(title,x+cW/2,titleY,{align:'center'});
+    }
 
     // Name box + grid
     const nameH=9, gridPadH=10, gridPadV=5;
