@@ -190,6 +190,11 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
         <span class="hbtn-desc">Conecta Spotify y detecta automáticamente cada artista que suena</span>
       </button>
     </div>
+    <div style="margin-top:1.5rem;max-width:480px;background:rgba(255,200,0,0.06);border:1px solid rgba(255,200,0,0.2);border-radius:12px;padding:0.875rem 1.25rem;text-align:left;">
+      <p style="font-size:0.8rem;color:#94a3b8;line-height:1.6;margin:0;">
+        ⚠️ Para usar esta aplicación necesitas una <strong style="color:#fbbf24;">cuenta de Spotify Premium</strong>. La detección de artistas en tiempo real no está disponible con cuentas gratuitas.
+      </p>
+    </div>
   </div>
 </div>
 
@@ -239,7 +244,7 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
             <input type="file" accept=".csv" class="hidden" onchange="importCSV(event)"/>
           </label>
           <div class="msg msg-warn" style="margin-top:1rem;">
-            ⚠️ <strong>Importante:</strong> exporta el CSV de la playlist que usaréis para jugar. <strong>Una vez generados los cartones, no añadas ni elimines canciones de esa playlist</strong> — si la modificas, el sistema no detectará correctamente los artistas durante la partida.
+            ⚠️ <strong>Importante:</strong> carga el CSV de la playlist que usaréis para jugar. <strong>Una vez generados los cartones, no añadas ni elimines canciones de esa playlist</strong> — si la modificas, el sistema no detectará correctamente los artistas durante la partida.
           </div>
           <div id="csv-msg" class="hidden"></div>
         </div>
@@ -473,9 +478,9 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
       <h1 class="phase-title">🎶 ¡A <span style="color:var(--neon)">Jugar!</span></h1>
     </div>
 
-    <!-- Aviso importante -->
-    <div class="notice-box">
-      <div class="notice-title">⚠️ Instrucciones para el host</div>
+    <!-- AVISO -->
+    <div class="notice-box" style="margin-bottom:1.5rem;">
+      <div class="notice-title">⚠️ Antes de empezar</div>
       <ul class="notice-list">
         <li>Abre la app de <strong>Spotify en tu móvil o PC</strong> — no este navegador</li>
         <li>Reproduce únicamente las canciones de la playlist con la que generaste los cartones, ni una más ni una menos</li>
@@ -484,32 +489,28 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
       </ul>
     </div>
 
-    <!-- Cargar CSV -->
-    <div class="step-card" id="play-csv-card" style="margin-bottom:1.25rem;border-color:rgba(0,229,255,0.2);">
-      <div class="step-header">
-        <span class="step-num step-num-active" style="background:var(--cool);color:#080a12;">1</span>
-        <span class="step-title-txt" style="color:var(--cool);font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:0.04em;">Cargar CSV de la partida</span>
+    <!-- PASO 1: CSV -->
+    <div style="background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:1.5rem;margin-bottom:1rem;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;">
+        <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:1rem;width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.04em;color:var(--neon);">Cargar CSV de la partida</span>
       </div>
-      <div style="padding:0 1.5rem 1.5rem;">
-        <p style="font-size:0.84rem;color:#64748b;margin-bottom:0.875rem;">Carga el mismo CSV de Exportify que usaste para generar los cartones. Así el sistema identificará correctamente los artistas que suenen.</p>
-        <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;">
-          📄 Cargar CSV de la partida
-          <input type="file" accept=".csv" class="hidden" onchange="loadPlayCSV(event)"/>
-        </label>
-        <div id="play-csv-msg" class="hidden" style="margin-top:0.75rem;"></div>
-      </div>
+      <p style="font-size:0.83rem;color:#64748b;margin-bottom:0.875rem;">Carga el mismo CSV de Exportify que usaste para generar los cartones. Así el sistema identificará correctamente los artistas que suenen.</p>
+      <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;">
+        📄 Cargar CSV de la partida
+        <input type="file" accept=".csv" class="hidden" onchange="loadPlayCSV(event)"/>
+      </label>
+      <div id="play-csv-msg" class="hidden" style="margin-top:0.75rem;"></div>
     </div>
 
-    <!-- Conectar Spotify -->
-    <div class="connect-card" id="connect-card">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;">
-        <span class="step-num step-num-pending" id="spotify-step-num" style="background:rgba(255,255,255,0.08);color:#475569;">2</span>
-        <span style="font-size:0.78rem;font-weight:600;color:#475569;letter-spacing:0.07em;text-transform:uppercase;">Conectar Spotify</span>
+    <!-- PASO 2: Conectar Spotify -->
+    <div id="connect-card" style="background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:1.5rem;margin-bottom:1rem;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;">
+        <span id="spotify-step-num" style="background:rgba(255,255,255,0.08);color:#475569;font-family:'Bebas Neue',sans-serif;font-size:1rem;width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;">2</span>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.04em;color:#64748b;">Conectar con Spotify</span>
       </div>
-      <p style="font-size:0.84rem;color:#64748b;margin-bottom:1rem;">Conecta tu cuenta de Spotify Premium para que el sistema detecte qué artista está sonando en tiempo real.</p>
-      <button class="btn btn-green" style="width:100%;font-size:1rem;padding:14px;" onclick="spotifyLogin()">
-        Conectar con Spotify
-      </button>
+      <p style="font-size:0.83rem;color:#64748b;margin-bottom:1rem;">Se requiere cuenta Spotify Premium. Conéctala para que el sistema detecte qué artista está sonando en tiempo real.</p>
+      <button class="btn btn-green" style="width:100%;font-size:1rem;padding:14px;" onclick="spotifyLogin()">Conectar con Spotify (cuenta Premium requerida)</button>
       <div style="margin-top:0.875rem;">
         <button onclick="toggleFallback()" style="background:none;border:none;color:#334155;font-size:0.76rem;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;">¿Problemas con el login? Pegar token manualmente</button>
         <div id="token-fallback-box" class="token-fallback-box hidden">
@@ -520,10 +521,11 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
       </div>
     </div>
 
-    <!-- Connected state -->
+    <!-- PASO 3: Panel host (conectado) -->
     <div id="connected-state" class="hidden">
 
-      <div class="connected-bar">
+      <!-- Barra conectado -->
+      <div style="background:rgba(30,215,96,0.07);border:1px solid rgba(30,215,96,0.22);border-radius:12px;padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.5rem;">
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="sp-dot"></span>
           <span style="font-size:0.84rem;color:#86efac;font-weight:600;">Spotify conectado</span>
@@ -532,7 +534,12 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
         <button onclick="spotifyDisconnect()" style="background:none;border:none;color:#334155;font-size:0.76rem;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;">Desconectar</button>
       </div>
 
-      <!-- Now playing -->
+      <!-- Sonando ahora -->
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:0.75rem;">
+        <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:1rem;width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.04em;color:var(--neon);">Panel del host</span>
+      </div>
+
       <div class="now-playing-box">
         <div class="np-label">Sonando ahora 🎵</div>
         <div class="np-artist" id="np-artist">—</div>
@@ -541,7 +548,6 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
         <div class="np-status" id="np-status">Esperando reproducción en Spotify…</div>
       </div>
 
-      <!-- Played -->
       <div class="played-box">
         <div class="played-title">
           Artistas que ya han sonado
@@ -552,9 +558,8 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
         </div>
       </div>
 
-      <!-- Manual controls -->
       <div style="display:flex;gap:0.5rem;margin-top:1rem;justify-content:center;flex-wrap:wrap;">
-        <button class="btn btn-ghost" style="font-size:0.8rem;" onclick="manualNext()">Avance manual ⏭️</button>
+        <button class="btn btn-ghost" style="font-size:0.8rem;" onclick="exportPlayedPDF()">Guardar artistas que han sonado</button>
         <button class="btn btn-ghost" style="font-size:0.8rem;" onclick="resetSession()">🔄 Reset sesión</button>
       </div>
 
@@ -1425,6 +1430,47 @@ function drawGridPDF(doc,card,x,y,cW,cH,gridTop,artistFS,pal,rc,gridBotOverride)
     const lines=doc.splitTextToSize(artist,maxW);
     doc.text(lines,cx+cellW/2,cy+cellH/2,{align:'center',baseline:'middle'});
   });
+}
+
+// ══════════════════════════════════════
+// EXPORT PLAYED ARTISTS AS PDF
+// ══════════════════════════════════════
+function exportPlayedPDF(){
+  if(!S.played.length){ alert('Ningún artista ha sonado aún.'); return; }
+  if(typeof window.jspdf==='undefined'){ alert('❌ No se pudo cargar la librería PDF.'); return; }
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210,mX=20,mY=20;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(18);
+  doc.setTextColor(30,30,30);
+  doc.text('Artistas que han sonado',W/2,mY,{align:'center'});
+
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(120,120,120);
+  doc.text(`Generado el ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} a las ${pad(now.getHours())}:${pad(now.getMinutes())}`,W/2,mY+7,{align:'center'});
+
+  doc.setDrawColor(200,200,200); doc.setLineWidth(0.3);
+  doc.line(mX,mY+12,W-mX,mY+12);
+
+  let y=mY+22;
+  doc.setFontSize(11); doc.setTextColor(30,30,30);
+  S.played.forEach((artist,i)=>{
+    if(y>270){ doc.addPage(); y=mY; }
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(80,80,80);
+    doc.text(`${i+1}.`,mX,y);
+    doc.setFont('helvetica','normal');
+    doc.setTextColor(30,30,30);
+    doc.text(artist,mX+10,y);
+    y+=9;
+  });
+
+  const fname=`Artistas sonados ${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}h${pad(now.getMinutes())}m.pdf`;
+  doc.save(fname);
 }
 
 // ══════════════════════════════════════
