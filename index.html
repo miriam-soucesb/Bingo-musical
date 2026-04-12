@@ -845,7 +845,7 @@ function renderPreview(){
   let gridTop,gridBot=mY+cH-22;
 
   if(customNamePos==='top'){
-    const nameY=titleY+12;
+    const nameY=titleY+28;
     drawNameBox(ctx,mX+padH,nameY,cW-padH*2,nameH,pal,r);
     gridTop=nameY+nameH+nameGap;
   } else if(customNamePos==='bottom'){
@@ -915,14 +915,14 @@ function drawBgPattern(ctx,x,y,w,h,pal){
   const r=a=>`rgba(${a.join(',')},0.13)`;
   if(customBg==='dots'){
     ctx.fillStyle=r(pal.cell2);
-    const spacing=20;
-    for(let dx=0;dx<w+spacing;dx+=spacing)
-      for(let dy=0;dy<h+spacing;dy+=spacing){
-        ctx.beginPath(); ctx.arc(x+dx,y+dy,3,0,Math.PI*2); ctx.fill();
+    const spacing=48;
+    for(let dx=spacing/2;dx<w+spacing;dx+=spacing)
+      for(let dy=spacing/2;dy<h+spacing;dy+=spacing){
+        ctx.beginPath(); ctx.arc(x+dx,y+dy,14,0,Math.PI*2); ctx.fill();
       }
   } else if(customBg==='stripes'){
     ctx.fillStyle=r(pal.cell2);
-    const sw=8,gap=16;
+    const sw=22,gap=44;
     for(let dx=0;dx<w+gap;dx+=gap) ctx.fillRect(x+dx,y,sw,h);
   }
   ctx.restore();
@@ -1014,13 +1014,13 @@ function generatePDF(){
     // Background pattern
     if(customBg==='dots'){
       doc.setFillColor(...rc(pal.cell2));
-      const spacing=5;
-      for(let dx=1;dx<cW-1;dx+=spacing)
-        for(let dy=1;dy<cH-1;dy+=spacing)
-          doc.circle(x+dx,y+dy,0.6,'F');
+      const spacing=14;
+      for(let dx=spacing/2;dx<cW;dx+=spacing)
+        for(let dy=spacing/2;dy<cH;dy+=spacing)
+          doc.circle(x+dx,y+dy,4,'F');
     } else if(customBg==='stripes'){
       doc.setFillColor(...rc(pal.cell2));
-      const sw=2,gap=4.5;
+      const sw=7,gap=14;
       for(let dx=0;dx<cW;dx+=gap) doc.rect(x+dx,y,sw,cH,'F');
     }
 
@@ -1060,7 +1060,7 @@ function generatePDF(){
     let gridTop,gridBot=y+cH-10;
 
     if(customNamePos==='top'){
-      const nameY=titleY+5;
+      const nameY=titleY+10;
       drawNameBoxPDF(doc,x+gridPadH,nameY,cW-gridPadH*2,nameH,pal,rc);
       gridTop=nameY+nameH+nameGap;
     } else if(customNamePos==='bottom'){
