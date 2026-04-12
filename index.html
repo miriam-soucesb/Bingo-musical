@@ -27,6 +27,26 @@ body{
 .opt-btn{padding:8px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#94a3b8;cursor:pointer;font-family:"DM Sans",sans-serif;font-size:0.82rem;font-weight:500;transition:all 0.15s;}
 .opt-btn:hover{border-color:rgba(240,255,68,0.3);color:#e2e8f0;}
 .opt-btn.sel{border-color:var(--neon);background:rgba(240,255,68,0.1);color:var(--neon);}
+
+/* ── GUIDE ── */
+.guide-step{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:1rem;}
+.guide-step-header{display:flex;align-items:center;gap:12px;margin-bottom:0.875rem;}
+.guide-num{background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:1rem;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+.guide-step-title{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:0.04em;color:#e2e8f0;}
+.guide-text{font-size:0.85rem;color:#94a3b8;line-height:1.6;margin-bottom:0.5rem;}
+.guide-ul{padding-left:1.25rem;margin:0.5rem 0;display:flex;flex-direction:column;gap:0.3rem;}
+.guide-ul li{font-size:0.84rem;color:#94a3b8;line-height:1.5;}
+.guide-ol{padding-left:1.25rem;margin:0.5rem 0;display:flex;flex-direction:column;gap:0.3rem;}
+.guide-ol li{font-size:0.84rem;color:#94a3b8;line-height:1.5;}
+.guide-option{display:flex;align-items:flex-start;gap:10px;font-size:0.84rem;color:#94a3b8;line-height:1.5;}
+.guide-option-num{background:rgba(240,255,68,0.12);color:var(--neon);font-size:0.75rem;font-weight:700;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.guide-faq{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:12px;padding:0;overflow:hidden;}
+.guide-faq summary{padding:0.875rem 1.25rem;cursor:pointer;font-size:0.87rem;font-weight:600;color:#cbd5e1;list-style:none;display:flex;align-items:center;justify-content:space-between;}
+.guide-faq summary::-webkit-details-marker{display:none;}
+.guide-faq summary::after{content:'＋';color:#475569;font-size:1rem;transition:transform 0.2s;}
+.guide-faq[open] summary::after{content:'－';}
+.guide-faq p{padding:0 1.25rem 1rem;font-size:0.84rem;color:#64748b;line-height:1.6;margin:0;}
+
 /* ── SCREENS ── */
 .screen{display:none;min-height:100vh;}
 .screen.active{display:flex;flex-direction:column;}
@@ -49,6 +69,7 @@ body{
 
 /* ── PHASE LAYOUT ── */
 .phase-wrap{max-width:680px;width:100%;margin:0 auto;padding:2rem 1.25rem 5rem;}
+.phase-wrap.wide{max-width:1200px;}
 .phase-header{display:flex;align-items:center;gap:1rem;margin-bottom:2.5rem;}
 .back-btn{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;padding:8px 14px;color:#64748b;cursor:pointer;font-size:0.84rem;font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;flex-shrink:0;}
 .back-btn:hover{background:rgba(255,255,255,0.09);color:#e2e8f0;}
@@ -59,6 +80,7 @@ body{
 
 /* step states */
 .step-card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:border-color 0.25s,opacity 0.25s;}
+#sc4{overflow:visible;}
 .step-card.locked{opacity:0.38;pointer-events:none;}
 .step-card.done{border-color:rgba(30,215,96,0.3);}
 .step-card.active{border-color:var(--border-accent);}
@@ -190,9 +212,12 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
         <span class="hbtn-desc">Conecta Spotify y detecta automáticamente cada artista que suena</span>
       </button>
     </div>
+    <button onclick="goTo('guide')" style="margin-top:1rem;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 24px;color:#475569;font-family:'DM Sans',sans-serif;font-size:0.83rem;cursor:pointer;transition:all 0.18s;width:100%;max-width:560px;" onmouseover="this.style.borderColor='rgba(255,255,255,0.25)';this.style.color='#94a3b8'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='#475569'">
+      📖 Guía de uso
+    </button>
     <div style="margin-top:1.5rem;max-width:480px;background:rgba(255,200,0,0.06);border:1px solid rgba(255,200,0,0.2);border-radius:12px;padding:0.875rem 1.25rem;text-align:left;">
       <p style="font-size:0.8rem;color:#94a3b8;line-height:1.6;margin:0;">
-        ⚠️ Para usar esta aplicación necesitas una <strong style="color:#fbbf24;">cuenta de Spotify Premium</strong>. La detección de artistas en tiempo real no está disponible con cuentas gratuitas.
+        ⚠️ Para usar esta aplicación como host necesitas una <strong style="color:#fbbf24;">cuenta de Spotify Premium</strong> y haber sido <strong style="color:#fbbf24;">añadido previamente como cuenta autorizada</strong> por el propietario de la app. La detección de artistas en tiempo real no está disponible con cuentas gratuitas ni no autorizadas.
       </p>
     </div>
   </div>
@@ -202,7 +227,7 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
      PHASE 1 — GENERAR PARTIDA
 ════════════════════════════════ -->
 <div id="screen-phase1" class="screen">
-  <div class="phase-wrap">
+  <div class="phase-wrap wide" id="phase1-wrap">
 
     <div class="phase-header">
       <button class="back-btn" onclick="goTo('home')">← Inicio</button>
@@ -311,119 +336,129 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
           <span class="step-check hidden" id="sk4">✓</span>
           <span class="step-summary hidden" id="ss4"></span>
         </div>
-        <div class="step-body">
-          <p class="step-desc">Dale tu toque personal. La previsualización se actualiza en tiempo real con cada cambio.</p>
+        <div class="step-body" style="padding:0;">
+          <p class="step-desc" style="padding:1.25rem 1.5rem 0;">Dale tu toque personal. La previsualización se actualiza en tiempo real con cada cambio.</p>
 
-          <!-- BLOQUE 1: Título -->
-          <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
-              <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
-              <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Título del cartón</span>
-            </div>
-            <p style="font-size:0.8rem;color:#475569;margin-bottom:0.75rem;">Elige una opción — texto escrito o imagen PNG. Solo una de las dos.</p>
-            <div class="opt-row" style="margin-bottom:0.875rem;">
-              <button class="opt-btn sel" id="title-mode-text" onclick="setTitleMode('text',this)">✏️ Texto escrito</button>
-              <button class="opt-btn" id="title-mode-img" onclick="setTitleMode('img',this)">🖼️ Imagen PNG</button>
-            </div>
-            <div id="title-text-wrap">
-              <input type="text" id="custom-title" placeholder="Bingo Musical" maxlength="40" oninput="renderPreview()"/>
-              <p style="font-size:0.73rem;color:#334155;margin-top:4px;">Se respetan mayúsculas y minúsculas tal como lo escribas.</p>
-            </div>
-            <div id="title-img-wrap" class="hidden">
-              <div class="msg msg-info" style="margin-bottom:0.75rem;">
-                📐 Tamaño recomendado: <strong>600 × 120 px</strong> en PNG con fondo transparente o del color de tu paleta. La imagen sustituirá al título en todos los cartones.
+          <!-- TWO-COLUMN LAYOUT -->
+          <div style="display:grid;grid-template-columns:1fr 380px;gap:0;align-items:start;min-height:600px;">
+
+            <!-- LEFT: Opciones -->
+            <div style="padding:1rem 1.5rem 1.5rem;border-right:1px solid rgba(255,255,255,0.06);">
+
+              <!-- BLOQUE 1: Título -->
+              <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
+                  <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
+                  <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Título del cartón</span>
+                </div>
+                <p style="font-size:0.8rem;color:#475569;margin-bottom:0.75rem;">Elige una opción — texto escrito o imagen PNG. Solo una de las dos.</p>
+                <div class="opt-row" style="margin-bottom:0.875rem;">
+                  <button class="opt-btn sel" id="title-mode-text" onclick="setTitleMode('text',this)">✏️ Texto escrito</button>
+                  <button class="opt-btn" id="title-mode-img" onclick="setTitleMode('img',this)">🖼️ Imagen PNG</button>
+                </div>
+                <div id="title-text-wrap">
+                  <input type="text" id="custom-title" placeholder="Bingo Musical" maxlength="40" oninput="renderPreview()"/>
+                  <p style="font-size:0.73rem;color:#334155;margin-top:4px;">Se respetan mayúsculas y minúsculas tal como lo escribas.</p>
+                </div>
+                <div id="title-img-wrap" class="hidden">
+                  <div class="msg msg-info" style="margin-bottom:0.75rem;">
+                    📐 Tamaño recomendado: <strong>600 × 120 px</strong> en PNG con fondo transparente o del color de tu paleta. La imagen sustituirá al título en todos los cartones.
+                  </div>
+                  <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;gap:8px;">
+                    Subir imagen PNG
+                    <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="loadTitleImage(event)"/>
+                  </label>
+                  <div id="title-img-msg" class="hidden msg msg-warn" style="margin-top:0.75rem;"></div>
+                  <div id="title-img-preview" class="hidden" style="margin-top:0.75rem;">
+                    <img id="title-img-el" style="max-width:100%;border-radius:8px;border:1px solid rgba(255,255,255,0.1);" alt="Preview título"/>
+                    <button onclick="clearTitleImage()" style="background:none;border:none;color:#64748b;font-size:0.78rem;cursor:pointer;text-decoration:underline;margin-top:4px;display:block;font-family:'DM Sans',sans-serif;">Quitar imagen</button>
+                  </div>
+                </div>
               </div>
-              <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;gap:8px;">
-                Subir imagen PNG
-                <input type="file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="loadTitleImage(event)"/>
-              </label>
-              <div id="title-img-msg" class="hidden msg msg-warn" style="margin-top:0.75rem;"></div>
-              <div id="title-img-preview" class="hidden" style="margin-top:0.75rem;">
-                <img id="title-img-el" style="max-width:100%;border-radius:8px;border:1px solid rgba(255,255,255,0.1);" alt="Preview título"/>
-                <button onclick="clearTitleImage()" style="background:none;border:none;color:#64748b;font-size:0.78rem;cursor:pointer;text-decoration:underline;margin-top:4px;display:block;font-family:'DM Sans',sans-serif;">Quitar imagen</button>
+
+              <!-- BLOQUE 2: Paleta -->
+              <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
+                  <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
+                  <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Paleta de colores</span>
+                </div>
+                <div id="palette-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
+              </div>
+
+              <!-- BLOQUE 3: Tipografía -->
+              <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
+                  <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
+                  <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Tipografía</span>
+                </div>
+                <div class="opt-row" id="font-opts" style="margin-bottom:0.75rem;">
+                  <button class="opt-btn sel" onclick="selectFont('Limelight','Limelight',this)">Limelight</button>
+                  <button class="opt-btn" onclick="selectFont('Plaster','Plaster',this)">Plaster</button>
+                  <button class="opt-btn" onclick="selectFont('Montserrat','Montserrat',this)">Montserrat</button>
+                  <button class="opt-btn" onclick="selectFont('Alfa Slab One','Alfa Slab One',this)">Alfa Slab One</button>
+                </div>
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                  <input type="checkbox" id="diff-font" onchange="renderPreview()" style="width:16px;height:16px;accent-color:var(--neon);cursor:pointer;flex-shrink:0;"/>
+                  <span style="font-size:0.82rem;color:#94a3b8;">Tipografía distinta para los artistas <span style="color:#64748b;">(Verdana)</span></span>
+                </label>
+              </div>
+
+              <!-- BLOQUE 4: Tamaño artistas -->
+              <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
+                  <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">4</span>
+                  <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Tamaño de los artistas</span>
+                </div>
+                <div class="opt-row">
+                  <button class="opt-btn" onclick="selectSize('s',this)">Pequeño</button>
+                  <button class="opt-btn sel" onclick="selectSize('m',this)">Mediano</button>
+                  <button class="opt-btn" onclick="selectSize('l',this)">Grande</button>
+                </div>
+              </div>
+
+              <!-- BLOQUE 5: Recuadro nombre -->
+              <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
+                  <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">5</span>
+                  <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Recuadro "Propiedad de…"</span>
+                </div>
+                <div class="opt-row">
+                  <button class="opt-btn" onclick="selectNamePos('top',this)">Arriba</button>
+                  <button class="opt-btn sel" onclick="selectNamePos('bottom',this)">Abajo</button>
+                  <button class="opt-btn" onclick="selectNamePos('none',this)">Sin recuadro</button>
+                </div>
+              </div>
+
+              <!-- BLOQUE 6: Fondo -->
+              <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
+                  <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">6</span>
+                  <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Fondo del cartón</span>
+                </div>
+                <div class="opt-row">
+                  <button class="opt-btn sel" onclick="selectBg('solid',this)">Liso</button>
+                  <button class="opt-btn" onclick="selectBg('dots',this)">Polka dots</button>
+                  <button class="opt-btn" onclick="selectBg('stripes',this)">Rayas verticales</button>
+                  <button class="opt-btn" onclick="selectBg('waves',this)">Marco de ondas</button>
+                </div>
+              </div>
+
+              <div id="custom-msg" class="hidden"></div>
+              <div class="btn-row">
+                <button class="btn btn-ghost" onclick="jumpTo(3)">← Atrás</button>
+                <button class="btn btn-neon" onclick="confirmCustom()">Confirmar →</button>
               </div>
             </div>
-          </div>
 
-          <!-- BLOQUE 2: Paleta -->
-          <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
-              <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
-              <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Paleta de colores</span>
+            <!-- RIGHT: Previsualización sticky -->
+            <div style="position:sticky;top:1.5rem;padding:1.25rem;align-self:start;">
+              <p style="font-size:0.72rem;font-weight:600;color:#475569;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:0.75rem;">Previsualización en tiempo real</p>
+              <div style="border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);">
+                <canvas id="preview-canvas" style="width:100%;display:block;border-radius:14px;"></canvas>
+              </div>
             </div>
-            <div id="palette-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
-          </div>
 
-          <!-- BLOQUE 3: Tipografía -->
-          <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
-              <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
-              <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Tipografía</span>
-            </div>
-            <div class="opt-row" id="font-opts" style="margin-bottom:0.75rem;">
-              <button class="opt-btn sel" onclick="selectFont('Limelight','Limelight',this)">Limelight</button>
-              <button class="opt-btn" onclick="selectFont('Plaster','Plaster',this)">Plaster</button>
-              <button class="opt-btn" onclick="selectFont('Montserrat','Montserrat',this)">Montserrat</button>
-              <button class="opt-btn" onclick="selectFont('Alfa Slab One','Alfa Slab One',this)">Alfa Slab One</button>
-            </div>
-            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-              <input type="checkbox" id="diff-font" onchange="renderPreview()"
-                style="width:16px;height:16px;accent-color:var(--neon);cursor:pointer;flex-shrink:0;"/>
-              <span style="font-size:0.82rem;color:#94a3b8;">Tipografía distinta para los artistas <span style="color:#64748b;">(Verdana)</span></span>
-            </label>
-          </div>
-
-          <!-- BLOQUE 4: Tamaño artistas -->
-          <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
-              <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">4</span>
-              <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Tamaño de los artistas</span>
-            </div>
-            <div class="opt-row">
-              <button class="opt-btn" onclick="selectSize('s',this)">Pequeño</button>
-              <button class="opt-btn sel" onclick="selectSize('m',this)">Mediano</button>
-              <button class="opt-btn" onclick="selectSize('l',this)">Grande</button>
-            </div>
-          </div>
-
-          <!-- BLOQUE 5: Recuadro nombre -->
-          <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
-              <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">5</span>
-              <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Recuadro "Propiedad de…"</span>
-            </div>
-            <div class="opt-row">
-              <button class="opt-btn" onclick="selectNamePos('top',this)">Arriba</button>
-              <button class="opt-btn sel" onclick="selectNamePos('bottom',this)">Abajo</button>
-              <button class="opt-btn" onclick="selectNamePos('none',this)">Sin recuadro</button>
-            </div>
-          </div>
-
-          <!-- BLOQUE 6: Fondo -->
-          <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.875rem;">
-              <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">6</span>
-              <span style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;">Fondo del cartón</span>
-            </div>
-            <div class="opt-row">
-              <button class="opt-btn sel" onclick="selectBg('solid',this)">Liso</button>
-              <button class="opt-btn" onclick="selectBg('dots',this)">Polka dots</button>
-              <button class="opt-btn" onclick="selectBg('stripes',this)">Rayas verticales</button>
-              <button class="opt-btn" onclick="selectBg('waves',this)">Marco de ondas</button>
-            </div>
-          </div>
-
-          <!-- Preview -->
-          <label class="lbl" style="margin-bottom:0.5rem;">Previsualización en tiempo real</label>
-          <div style="border-radius:14px;overflow:hidden;margin-bottom:1rem;border:1px solid rgba(255,255,255,0.08);">
-            <canvas id="preview-canvas" style="width:100%;display:block;border-radius:14px;"></canvas>
-          </div>
-
-          <div id="custom-msg" class="hidden"></div>
-          <div class="btn-row">
-            <button class="btn btn-ghost" onclick="jumpTo(3)">← Atrás</button>
-            <button class="btn btn-neon" onclick="confirmCustom()">Confirmar →</button>
-          </div>
+          </div><!-- end two-col -->
         </div>
       </div>
     </div>
@@ -489,28 +524,17 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
       </ul>
     </div>
 
-    <!-- PASO 1: CSV -->
-    <div style="background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:1.5rem;margin-bottom:1rem;">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;">
-        <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:1rem;width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
-        <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.04em;color:var(--neon);">Cargar CSV de la partida</span>
-      </div>
-      <p style="font-size:0.83rem;color:#64748b;margin-bottom:0.875rem;">Carga el mismo CSV de Exportify que usaste para generar los cartones. Así el sistema identificará correctamente los artistas que suenen.</p>
-      <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;">
-        📄 Cargar CSV de la partida
-        <input type="file" accept=".csv" class="hidden" onchange="loadPlayCSV(event)"/>
-      </label>
-      <div id="play-csv-msg" class="hidden" style="margin-top:0.75rem;"></div>
-    </div>
-
-    <!-- PASO 2: Conectar Spotify -->
+    <!-- PASO 1: Conectar Spotify -->
     <div id="connect-card" style="background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:1.5rem;margin-bottom:1rem;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;">
-        <span id="spotify-step-num" style="background:rgba(255,255,255,0.08);color:#475569;font-family:'Bebas Neue',sans-serif;font-size:1rem;width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;">2</span>
-        <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.04em;color:#64748b;">Conectar con Spotify</span>
+        <span style="background:var(--neon);color:#080a12;font-family:'Bebas Neue',sans-serif;font-size:1rem;width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.04em;color:var(--neon);">Conectar con Spotify</span>
       </div>
-      <p style="font-size:0.83rem;color:#64748b;margin-bottom:1rem;">Se requiere cuenta Spotify Premium. Conéctala para que el sistema detecte qué artista está sonando en tiempo real.</p>
-      <button class="btn btn-green" style="width:100%;font-size:1rem;padding:14px;" onclick="spotifyLogin()">Conectar con Spotify (cuenta Premium requerida)</button>
+      <p style="font-size:0.83rem;color:#64748b;margin-bottom:0.75rem;">Se requiere cuenta Spotify Premium. Conéctala para que el sistema detecte qué artista está sonando en tiempo real.</p>
+      <div class="msg msg-warn" style="margin-bottom:1rem;">
+        ⚠️ Para poder actuar como host debes haber sido <strong>añadido previamente como cuenta asociada</strong> por el propietario de la app. Si no puedes conectarte, contacta con quien te compartió esta aplicación para que te añada.
+      </div>
+      <button class="btn btn-green" style="width:100%;font-size:1rem;padding:14px;" onclick="spotifyLogin()">Conectar con Spotify</button>
       <div style="margin-top:0.875rem;">
         <button onclick="toggleFallback()" style="background:none;border:none;color:#334155;font-size:0.76rem;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;">¿Problemas con el login? Pegar token manualmente</button>
         <div id="token-fallback-box" class="token-fallback-box hidden">
@@ -519,6 +543,20 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
           <button class="btn btn-outline" style="font-size:0.82rem;padding:8px 16px;" onclick="useManualToken()">Usar este token</button>
         </div>
       </div>
+    </div>
+
+    <!-- PASO 2: CSV -->
+    <div style="background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:1.5rem;margin-bottom:1rem;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;">
+        <span id="spotify-step-num" style="background:rgba(255,255,255,0.08);color:#475569;font-family:'Bebas Neue',sans-serif;font-size:1rem;width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;">2</span>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.04em;color:#64748b;">Cargar CSV de la partida</span>
+      </div>
+      <p style="font-size:0.83rem;color:#64748b;margin-bottom:0.875rem;">Carga el mismo CSV de Exportify que usaste para generar los cartones. Así el sistema identificará correctamente los artistas que suenen.</p>
+      <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;">
+        📄 Cargar CSV de la partida
+        <input type="file" accept=".csv" class="hidden" onchange="loadPlayCSV(event)"/>
+      </label>
+      <div id="play-csv-msg" class="hidden" style="margin-top:0.75rem;"></div>
     </div>
 
     <!-- PASO 3: Panel host (conectado) -->
@@ -605,6 +643,7 @@ const S = {
 // NAVIGATION
 // ══════════════════════════════════════
 function goTo(screen){
+  if(!['home','phase1','phase2','guide'].includes(screen)) return;
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+screen).classList.add('active');
   window.scrollTo(0,0);
@@ -1507,10 +1546,10 @@ function loadPlayCSV(ev){
       }
       if(!raw.length){ showMsg('play-csv-msg','⚠️ No se encontraron artistas en el CSV.','warn'); return; }
       S.artists=dedup(raw);
-      // Activate spotify step visually
+      // Illuminate CSV step number
       const sn=$('spotify-step-num');
       if(sn){sn.style.background='var(--neon)';sn.style.color='#080a12';}
-      showMsg('play-csv-msg',`✅ ${S.artists.length} artistas cargados. Ahora conecta Spotify.`,'ok');
+      showMsg('play-csv-msg',`✅ ${S.artists.length} artistas cargados.`,'ok');
     }catch(err){ showMsg('play-csv-msg',`❌ Error: ${err.message}`,'error'); }
   };
   reader.readAsText(file,'UTF-8');
@@ -1757,5 +1796,219 @@ renderPaletteGrid();
     </p>
   </div>
 </div>
+
+<!-- ════════════════════════════════
+     GUIDE SCREEN
+════════════════════════════════ -->
+<div id="screen-guide" class="screen">
+  <div class="phase-wrap">
+
+    <div class="phase-header">
+      <button class="back-btn" onclick="goTo('home')">← Inicio</button>
+      <h1 class="phase-title">📖 <span style="color:var(--neon)">Guía</span> de uso</h1>
+    </div>
+
+    <!-- Qué es -->
+    <div style="margin-bottom:1.5rem;">
+      <p style="font-size:0.93rem;color:#94a3b8;line-height:1.7;">Bingo Musical convierte tu playlist de Spotify en un juego de bingo para fiestas y reuniones. El sistema detecta automáticamente cada artista que suena y lo marca en tiempo real.</p>
+    </div>
+
+    <!-- Roles -->
+    <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:1.25rem;margin-bottom:1.5rem;">
+      <p style="font-size:0.78rem;font-weight:600;color:#64748b;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:0.75rem;">¿Quién hace qué?</p>
+      <div style="display:flex;flex-direction:column;gap:0.5rem;">
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <span style="background:var(--neon);color:#080a12;font-size:0.75rem;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0;margin-top:2px;">ORGANIZADOR</span>
+          <span style="font-size:0.84rem;color:#94a3b8;">Genera los cartones, los imprime y los reparte. El día de la partida actúa como <strong style="color:#e2e8f0;">host</strong>: conecta Spotify y gestiona la detección en tiempo real.</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <span style="background:rgba(255,255,255,0.1);color:#94a3b8;font-size:0.75rem;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0;margin-top:2px;">JUGADORES</span>
+          <span style="font-size:0.84rem;color:#94a3b8;">Solo necesitan el cartón impreso. No necesitan Spotify ni acceso a la app durante la partida.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aviso acceso host -->
+    <div class="msg msg-warn" style="margin-bottom:1.5rem;">
+      ⚠️ <strong>Requisito para ser host:</strong> para poder conectar Spotify en esta app, el propietario de la aplicación debe haberte añadido previamente como cuenta autorizada. Si no puedes conectarte, contacta con quien te compartió la app para que te dé acceso. Solo puede haber un máximo de 5 hosts registrados.
+    </div>
+
+    <!-- Aviso Premium -->
+    <div class="msg msg-warn" style="margin-bottom:2rem;">
+      ⚠️ <strong>Cuenta Spotify Premium requerida.</strong> La detección de artistas en tiempo real no funciona con cuentas gratuitas de Spotify.
+    </div>
+
+    <!-- PARTE 1 -->
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:0.05em;color:var(--neon);margin-bottom:1.25rem;">Parte 1 — Generar la partida</div>
+    <p style="font-size:0.84rem;color:#64748b;margin-bottom:1.25rem;">Lo hace el organizador antes del día de la partida.</p>
+
+    <!-- Paso 1 -->
+    <div class="guide-step">
+      <div class="guide-step-header">
+        <span class="guide-num">1</span>
+        <span class="guide-step-title">Importar artistas desde Spotify</span>
+      </div>
+      <p class="guide-text">Usamos <a href="https://exportify.net" target="_blank" style="color:var(--cool);">exportify.net</a> para extraer los artistas de tu playlist:</p>
+      <ol class="guide-ol">
+        <li>Abre exportify.net e inicia sesión con tu cuenta de Spotify</li>
+        <li>Busca la playlist que usaréis para jugar y pulsa <strong>Export</strong> — se descarga un archivo .csv</li>
+        <li>En la app, pulsa <strong>Cargar CSV de Exportify</strong> y selecciona ese archivo</li>
+      </ol>
+      <div class="msg msg-warn" style="margin-top:0.875rem;">
+        💾 <strong>Guarda el archivo CSV.</strong> Lo necesitarás también el día de la partida para cargarlo en la sección ¡A jugar!
+      </div>
+      <div class="msg msg-warn" style="margin-top:0.5rem;">
+        🚫 Una vez generados los cartones, <strong>no añadas ni elimines canciones</strong> de esa playlist. Si la modificas, el sistema no detectará correctamente los artistas.
+      </div>
+    </div>
+
+    <!-- Paso 2 -->
+    <div class="guide-step">
+      <div class="guide-step-header">
+        <span class="guide-num">2</span>
+        <span class="guide-step-title">Confirmar artistas</span>
+      </div>
+      <p class="guide-text">Revisa el pool de artistas importados. Puedes eliminar artistas individualmente pulsando la ✕. Los duplicados se eliminan automáticamente.</p>
+      <ul class="guide-ul">
+        <li>Necesitas mínimo <strong>6 artistas</strong> para generar 1 cartón</li>
+        <li>Cuantos más artistas tenga tu playlist, más jugadores podrán participar</li>
+      </ul>
+    </div>
+
+    <!-- Paso 3 -->
+    <div class="guide-step">
+      <div class="guide-step-header">
+        <span class="guide-num">3</span>
+        <span class="guide-step-title">Número de jugadores</span>
+      </div>
+      <p class="guide-text">Indica cuántos cartones quieres generar. El sistema calculará si el pool es suficiente para garantizar cartones únicos.</p>
+      <div class="msg msg-info" style="margin-top:0.875rem;">
+        🎯 <strong>Garantía de unicidad:</strong> ningún cartón comparte más de 4 artistas con otro. Si el pool no da para tantos jugadores, la app te dice exactamente cuántos artistas más necesitas añadir a la playlist y volver al Paso 1.
+      </div>
+    </div>
+
+    <!-- Paso 4 -->
+    <div class="guide-step">
+      <div class="guide-step-header">
+        <span class="guide-num">4</span>
+        <span class="guide-step-title">Personalizar cartones</span>
+      </div>
+      <p class="guide-text">6 opciones con previsualización en tiempo real a la derecha:</p>
+      <div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.75rem;">
+        <div class="guide-option"><span class="guide-option-num">1</span><div><strong>Título</strong> — texto escrito con la tipografía elegida, o imagen PNG (600×120px recomendado). Solo una.</div></div>
+        <div class="guide-option"><span class="guide-option-num">2</span><div><strong>Paleta</strong> — 8 combinaciones color block.</div></div>
+        <div class="guide-option"><span class="guide-option-num">3</span><div><strong>Tipografía</strong> — Limelight, Plaster, Montserrat o Alfa Slab One. Opción de Verdana para los artistas.</div></div>
+        <div class="guide-option"><span class="guide-option-num">4</span><div><strong>Tamaño de artistas</strong> — Pequeño, Mediano o Grande.</div></div>
+        <div class="guide-option"><span class="guide-option-num">5</span><div><strong>Recuadro "Propiedad de…"</strong> — Arriba, Abajo (por defecto) o Sin recuadro. El jugador escribe su nombre aquí.</div></div>
+        <div class="guide-option"><span class="guide-option-num">6</span><div><strong>Fondo</strong> — Liso, Polka dots, Rayas verticales o Marco de ondas.</div></div>
+      </div>
+    </div>
+
+    <!-- Paso 5 -->
+    <div class="guide-step">
+      <div class="guide-step-header">
+        <span class="guide-num">5</span>
+        <span class="guide-step-title">Descargar e imprimir cartones</span>
+      </div>
+      <ul class="guide-ul">
+        <li>2 cartones por hoja A4 — imprímelos, recórtalos y repártelos</li>
+        <li>El PDF se descarga con nombre y fecha para que siempre sepas cuál es cuál</li>
+        <li><strong>A partir de este momento no toques la playlist</strong> — los cartones ya están generados</li>
+        <li>Tras descargar aparece el botón <strong>🎶 ¡A jugar!</strong> para ir directo a la partida</li>
+      </ul>
+    </div>
+
+    <!-- PARTE 2 -->
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:0.05em;color:var(--neon);margin:2rem 0 0.5rem;">Parte 2 — ¡A jugar!</div>
+    <p style="font-size:0.84rem;color:#64748b;margin-bottom:1.25rem;">Lo gestiona el host el día de la partida, con los cartones ya repartidos. Los jugadores no necesitan la app.</p>
+
+    <!-- Paso 1 jugar -->
+    <div class="guide-step">
+      <div class="guide-step-header">
+        <span class="guide-num">1</span>
+        <span class="guide-step-title">Conectar con Spotify</span>
+      </div>
+      <p class="guide-text">Pulsa <strong>Conectar con Spotify</strong> e inicia sesión. La app empezará a detectar qué artista está sonando cada 5 segundos.</p>
+      <div class="msg msg-warn" style="margin-top:0.875rem;">
+        ⚠️ <strong>Antes de conectar:</strong> abre la app de Spotify en tu móvil o PC (no en este navegador) y pon la playlist con la que generaste los cartones. No reproduzcas nada más durante la partida.
+      </div>
+      <div class="msg msg-warn" style="margin-top:0.5rem;">
+        🔐 <strong>¿No puedes conectarte?</strong> Necesitas que el propietario de la app te haya añadido como cuenta autorizada en el panel de Spotify for Developers. Contacta con quien te compartió la app.
+      </div>
+    </div>
+
+    <!-- Paso 2 jugar -->
+    <div class="guide-step">
+      <div class="guide-step-header">
+        <span class="guide-num">2</span>
+        <span class="guide-step-title">Cargar CSV de la partida</span>
+      </div>
+      <p class="guide-text">Carga el mismo archivo CSV que exportaste con Exportify al generar los cartones. Esto permite al sistema identificar correctamente los artistas y detectar si se está reproduciendo una playlist diferente.</p>
+      <div class="msg msg-info" style="margin-top:0.875rem;">
+        💡 Si no cargas el CSV la app seguirá funcionando, pero registrará todos los artistas que suenen sin filtrar — no sabrá si son de tu partida o no.
+      </div>
+    </div>
+
+    <!-- Paso 3 jugar -->
+    <div class="guide-step">
+      <div class="guide-step-header">
+        <span class="guide-num">3</span>
+        <span class="guide-step-title">Panel del host</span>
+      </div>
+      <p class="guide-text">Una vez conectado verás en tiempo real:</p>
+      <ul class="guide-ul">
+        <li><strong>Sonando ahora</strong> — artista y canción con barra de progreso</li>
+        <li><strong>Artistas que ya han sonado</strong> — lista acumulativa. Los jugadores van tachando en sus cartones</li>
+        <li><strong style="color:#fca5a5;">⚠️ Fuera de la partida</strong> — aparece en rojo si Spotify detecta artistas que no estaban en tu playlist. Significa que estás reproduciendo la playlist equivocada o que la modificaste después de generar los cartones</li>
+      </ul>
+      <div class="msg msg-info" style="margin-top:0.875rem;">
+        <strong>Guardar artistas que han sonado</strong> — genera un PDF con la lista numerada, útil para verificar un bingo. &nbsp;|&nbsp; <strong>Reset sesión</strong> — reinicia la partida manteniendo la conexión.
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:0.05em;color:var(--neon);margin:2rem 0 1.25rem;">Preguntas frecuentes</div>
+
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      <details class="guide-faq">
+        <summary>¿Quién puede ser host?</summary>
+        <p>Solo puede ser host quien tenga cuenta de Spotify Premium y haya sido añadido como usuario autorizado por el propietario de la app. Hay un máximo de 5 cuentas autorizadas. Si quieres ser host, contacta con quien te compartió la aplicación.</p>
+      </details>
+      <details class="guide-faq">
+        <summary>¿Los jugadores necesitan Spotify o la app?</summary>
+        <p>No. Los jugadores solo necesitan el cartón impreso. La app y Spotify solo los usa el host para detectar los artistas en tiempo real.</p>
+      </details>
+      <details class="guide-faq">
+        <summary>¿Cuántos jugadores pueden participar?</summary>
+        <p>Depende del número de artistas en la playlist. El sistema garantiza que ningún cartón comparte más de 4 artistas con otro. Si el pool es insuficiente, la app te dice exactamente cuántos artistas más necesitas añadir.</p>
+      </details>
+      <details class="guide-faq">
+        <summary>¿Qué pasa si modifico la playlist después de generar los cartones?</summary>
+        <p>Los artistas nuevos no aparecerán en los cartones ya impresos, y el sistema los detectará como "fuera de partida" en rojo. La playlist debe permanecer exactamente igual desde que se exportó el CSV hasta que termine la partida.</p>
+      </details>
+      <details class="guide-faq">
+        <summary>¿Los cartones son siempre distintos?</summary>
+        <p>Sí. El sistema genera cada cartón aleatoriamente y verifica que no comparte más de 4 artistas con ningún otro. Si no puede garantizarlo con el pool disponible, bloquea la generación y pide más artistas.</p>
+      </details>
+      <details class="guide-faq">
+        <summary>He conectado Spotify pero no detecta nada</summary>
+        <p>Asegúrate de que la música está sonando activamente en Spotify (no en pausa). La app consulta cada 5 segundos. Si está en pausa verás el mensaje "Música en pausa — dale al play en Spotify".</p>
+      </details>
+      <details class="guide-faq">
+        <summary>¿Qué significa la sección "Fuera de la partida" en rojo?</summary>
+        <p>Que Spotify detecta artistas que no estaban en tu playlist original. Significa que estás reproduciendo una playlist distinta o que añadiste canciones después de generar los cartones. Para una partida justa, para la música, verifica la playlist y reinicia.</p>
+      </details>
+    </div>
+
+    <!-- Legal -->
+    <div style="margin-top:2.5rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.25rem;">
+      <p style="font-size:0.72rem;color:#334155;line-height:1.7;margin:0;">
+        ⚖️ <strong style="color:#475569;">Uso personal y no comercial únicamente.</strong> Esta herramienta es de entretenimiento para uso privado. No está afiliada ni patrocinada por Spotify AB. El uso de la API de Spotify se realiza bajo sus <a href="https://developer.spotify.com/terms" target="_blank" style="color:#475569;">Términos de Servicio para Desarrolladores</a>. <strong style="color:#475569;">Queda expresamente prohibida su comercialización, reventa o cualquier uso con fines lucrativos.</strong>
+      </p>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>
