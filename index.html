@@ -558,6 +558,16 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
         </div>
       </div>
 
+      <!-- Fuera de partida -->
+      <div id="outsiders-box" class="hidden" style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:16px;padding:1.25rem;margin-top:1rem;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.75rem;flex-wrap:wrap;">
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:0.05em;color:#fca5a5;">⚠️ Fuera de la partida</span>
+          <span id="outsiders-count" style="background:rgba(239,68,68,0.2);color:#fca5a5;font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:20px;">0</span>
+        </div>
+        <p style="font-size:0.78rem;color:#f87171;margin-bottom:0.875rem;line-height:1.5;">Estos artistas no estaban en tu playlist original. Puede que estés reproduciendo una playlist distinta o que hayas añadido canciones después de generar los cartones.</p>
+        <div id="outsiders-list" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+      </div>
+
       <div style="display:flex;gap:0.5rem;margin-top:1rem;justify-content:center;flex-wrap:wrap;">
         <button class="btn btn-ghost" style="font-size:0.8rem;" onclick="exportPlayedPDF()">Guardar artistas que han sonado</button>
         <button class="btn btn-ghost" style="font-size:0.8rem;" onclick="resetSession()">🔄 Reset sesión</button>
@@ -582,6 +592,7 @@ const REDIRECT  = 'https://miriam-soucesb.github.io/Bingo-musical/';
 const S = {
   artists: [],   // confirmed pool
   numPlayers: 4,
+  outsiders: [],
   cards: [],
   played: [],
   token: null,
@@ -1618,11 +1629,35 @@ async function pollNow(){
       spArtists.forEach(a=>addPlayed(a,tname));
     } else {
       const matched=matchArtist(spArtists);
-      if(matched) addPlayed(matched,tname);
-      else $('np-status').textContent=`${spArtists.join(' & ')} — no está en el pool de esta partida`;
+      if(matched){
+        addPlayed(matched,tname);
+      } else {
+        // Artist not in pool — flag as outsider
+        spArtists.forEach(a=>addOutsider(a,tname));
+      }
     }
 
   }catch(e){}
+}
+
+
+function addOutsider(artist, track){
+  if(S.outsiders && S.outsiders.includes(artist)) return;
+  if(!S.outsiders) S.outsiders=[];
+  S.outsiders.push(artist);
+
+  // Show outsiders box
+  $('outsiders-box').classList.remove('hidden');
+  $('outsiders-count').textContent=S.outsiders.length;
+
+  // Add badge
+  const badge=document.createElement('span');
+  badge.style.cssText='display:inline-flex;align-items:center;gap:5px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.35);color:#fca5a5;padding:5px 12px;border-radius:20px;font-size:0.78rem;font-weight:600;';
+  badge.textContent=artist;
+  $('outsiders-list').appendChild(badge);
+
+  // Update status
+  $('np-status').textContent=`⚠️ ${artist} — no está en el pool de esta partida`;
 }
 
 function matchArtist(spArtists){
