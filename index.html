@@ -177,9 +177,10 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
   <div style="max-width:600px;width:100%;margin:0 auto;padding:3rem 1.5rem;display:flex;flex-direction:column;align-items:center;">
     <div class="home-logo">BINGO<br><span>MUSICAL</span></div>
     <p class="home-sub">Crea los cartones · Conecta Spotify · ¡A jugar!</p>
+    <p style="font-size:0.7rem;color:#334155;margin-top:0.5rem;">⚖️ Uso personal y no comercial · No afiliado a Spotify</p>
     <div class="home-cards">
       <button class="hbtn hbtn-a" onclick="goTo('phase1')">
-        <span class="hbtn-icon">🔄</span>
+        <span class="hbtn-icon">📝</span>
         <span class="hbtn-label">Generar partida</span>
         <span class="hbtn-desc">Importa tu playlist, edita el pool de artistas y descarga los cartones en PDF</span>
       </button>
@@ -200,7 +201,7 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
 
     <div class="phase-header">
       <button class="back-btn" onclick="goTo('home')">← Inicio</button>
-      <h1 class="phase-title">🎴 Generar <span style="color:var(--neon)">Partida</span></h1>
+      <h1 class="phase-title">📝 Generar <span style="color:var(--neon)">Partida</span></h1>
     </div>
 
     <!-- ── STEP 1: Importar CSV ── -->
@@ -215,16 +216,28 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
         <div class="step-body">
           <p class="step-desc">Usamos <strong>Exportify</strong> para extraer los artistas de tu playlist automáticamente.</p>
           <div class="exportify-box">
-            <ol>
-              <li>Abre <a href="https://exportify.net" target="_blank">exportify.net ↗</a> e inicia sesión con Spotify</li>
-              <li>Busca tu playlist y pulsa <strong>Export</strong> — se descarga un archivo .csv</li>
-              <li>Selecciona ese archivo con el botón de abajo</li>
+            <ol style="padding-left:0;list-style:none;display:flex;flex-direction:column;gap:0.5rem;">
+              <li style="display:flex;align-items:flex-start;gap:10px;">
+                <span style="background:rgba(0,229,255,0.15);color:var(--cool);border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;margin-top:1px;">1</span>
+                <span>Abre <a href="https://exportify.net" target="_blank">exportify.net ↗</a> e inicia sesión con Spotify</span>
+              </li>
+              <li style="display:flex;align-items:flex-start;gap:10px;">
+                <span style="background:rgba(0,229,255,0.15);color:var(--cool);border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;margin-top:1px;">2</span>
+                <span>Busca la playlist que hayas preparado para jugar la partida y pulsa <strong>Export</strong> — se descarga un archivo .csv</span>
+              </li>
+              <li style="display:flex;align-items:flex-start;gap:10px;">
+                <span style="background:rgba(0,229,255,0.15);color:var(--cool);border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0;margin-top:1px;">3</span>
+                <span>Selecciona ese archivo al clicar en el botón de abajo</span>
+              </li>
             </ol>
           </div>
           <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;">
-            📄 Seleccionar CSV de Exportify
+            📄 Cargar CSV de Exportify
             <input type="file" accept=".csv" class="hidden" onchange="importCSV(event)"/>
           </label>
+          <div class="msg msg-warn" style="margin-top:1rem;">
+            ⚠️ <strong>Importante:</strong> exporta el CSV de la playlist que usaréis para jugar. <strong>Una vez generados los cartones, no añadas ni elimines canciones de esa playlist</strong> — si la modificas, el sistema no detectará correctamente los artistas durante la partida.
+          </div>
           <div id="csv-msg" class="hidden"></div>
         </div>
       </div>
@@ -381,8 +394,11 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
         </div>
         <div class="step-body">
           <p class="step-desc">Cada cartón ocupa <strong>media hoja A4</strong>. Imprímelos, recórtalos y repártelos antes de empezar.</p>
+          <div class="msg msg-warn" style="margin-bottom:0.75rem;">
+            🎵 <strong>¡Ya puedes imprimir los cartones!</strong> A partir de este momento <strong>no modifiques la playlist de Spotify</strong> que usaste para generarlos — no añadas, elimines ni reordenes canciones. Cualquier cambio puede hacer que el sistema no detecte correctamente los artistas durante la partida.
+          </div>
           <div class="msg msg-info" style="margin-bottom:0;">
-            ⚠️ Durante la partida, reproduce <strong>únicamente las canciones de esta playlist</strong>. Los artistas añadidos después no contarán en el bingo.
+            Durante la partida, reproduce <strong>únicamente las canciones de esa playlist</strong> desde la app de Spotify en tu móvil o PC.
           </div>
           <div id="generate-msg" class="hidden"></div>
           <div class="btn-row">
@@ -413,7 +429,8 @@ input:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 3px rgba(240,
       <div class="notice-title">⚠️ Instrucciones para el host</div>
       <ul class="notice-list">
         <li>Abre <strong>Spotify en tu móvil o PC</strong> — la app oficial, no este navegador</li>
-        <li>Reproduce <strong>únicamente las canciones de la playlist</strong> con la que generaste los cartones</li>
+        <li>Reproduce <strong>únicamente las canciones de la playlist</strong> con la que generaste los cartones — ni una canción más ni una menos</li>
+        <li><strong style="color:#fca5a5">No modifiques esa playlist</strong> entre que generaste los cartones y ahora: si añadiste o eliminaste canciones, los artistas nuevos no aparecerán en los cartones y el sistema fallará</li>
         <li>Esta web detectará automáticamente cada artista que suene cada 5 segundos</li>
         <li>Si reproduces canciones de otra playlist, <strong style="color:#fca5a5">el sistema no las registrará</strong></li>
       </ul>
@@ -702,16 +719,14 @@ function confirmPlayers(){
 // PALETTES — basadas en paletas Pantone
 // ══════════════════════════════════════
 const PALETTES = [
-  // Fondos suaves
-  { id:'circe',     label:'Circe',           bg:[237,229,204], card:[240,233,210], cell1:[237,229,204], cell2:[197,139,126], text1:[45,83,92],  text2:[255,255,255], border:[197,139,126] },
-  { id:'demeter',   label:'Démeter',          bg:[248,240,238], card:[252,244,242], cell1:[248,240,238], cell2:[226,138,133], text1:[192,88,74],  text2:[255,255,255], border:[226,138,133] },
-  { id:'persefone', label:'Perséfone',        bg:[240,239,237], card:[244,243,241], cell1:[240,239,237], cell2:[4,71,75],    text1:[4,71,75],   text2:[240,239,237], border:[4,71,75]    },
-  { id:'iris',      label:'Iris',             bg:[245,240,242], card:[249,244,246], cell1:[237,222,224], cell2:[54,68,93],   text1:[54,68,93],  text2:[237,222,224], border:[54,68,93]   },
-  // Fondos oscuros
-  { id:'artemisa',  label:'Artemisa',         bg:[26,8,8],      card:[42,16,16],    cell1:[109,22,21],  cell2:[208,185,186], text1:[208,185,186],text2:[109,22,21],  border:[115,152,153]},
-  { id:'persnoche', label:'Perséfone noche',  bg:[2,24,32],     card:[4,46,48],     cell1:[4,71,75],    cell2:[228,152,30],  text1:[228,152,30], text2:[4,71,75],    border:[228,152,30] },
-  { id:'irisnoche', label:'Iris noche',       bg:[14,20,48],    card:[26,44,64],    cell1:[54,68,93],   cell2:[220,128,121], text1:[237,222,224],text2:[255,255,255], border:[220,128,121]},
-  { id:'circenoche',label:'Circe noche',      bg:[10,28,34],    card:[22,88,92],    cell1:[45,83,92],   cell2:[218,204,175], text1:[218,204,175],text2:[45,83,92],   border:[197,139,126]},
+  { id:'rosaverde',  label:'Rosa · Verde',         bg:[249,232,232], card:[249,232,232], cell1:[249,232,232], cell2:[74,124,89],   text1:[74,124,89],   text2:[249,232,232], border:[74,124,89]   },
+  { id:'blanconegro',label:'Blanco · Negro',        bg:[255,255,255], card:[255,255,255], cell1:[255,255,255], cell2:[17,17,17],    text1:[17,17,17],    text2:[255,255,255], border:[17,17,17]    },
+  { id:'rosarojo',   label:'Rosa · Rojo',           bg:[249,232,232], card:[249,232,232], cell1:[249,232,232], cell2:[204,0,34],    text1:[204,0,34],    text2:[249,232,232], border:[204,0,34]    },
+  { id:'amarulokl',  label:'Amarillo · Azul Klein', bg:[255,248,204], card:[255,248,204], cell1:[255,248,204], cell2:[0,47,167],    text1:[0,47,167],    text2:[255,248,204], border:[0,47,167]    },
+  { id:'blancoverde',label:'Blanco · Verde oscuro', bg:[255,255,255], card:[255,255,255], cell1:[255,255,255], cell2:[27,67,50],    text1:[27,67,50],    text2:[255,255,255], border:[27,67,50]    },
+  { id:'cremacafe',  label:'Crema · Café',          bg:[245,236,215], card:[245,236,215], cell1:[245,236,215], cell2:[92,51,23],    text1:[92,51,23],    text2:[245,236,215], border:[92,51,23]    },
+  { id:'blancoklein',label:'Blanco · Azul Klein',   bg:[255,255,255], card:[255,255,255], cell1:[255,255,255], cell2:[0,47,167],    text1:[0,47,167],    text2:[255,255,255], border:[0,47,167]    },
+  { id:'barbierosa', label:'Blanco · Rosa Barbie',  bg:[255,255,255], card:[255,255,255], cell1:[255,255,255], cell2:[255,0,144],   text1:[255,0,144],   text2:[255,255,255], border:[255,0,144]   },
 ];
 let selectedPalette = PALETTES[0];
 
@@ -797,7 +812,7 @@ function renderPreview(){
 
   // Card bg
   ctx.fillStyle=r(pal.card);
-  rrect(ctx,mX,mY,cW,cH,14); ctx.fill();
+  rrect(ctx,mX,mY,cW,cH,22); ctx.fill();
 
   // Background pattern (before border)
   drawBgPattern(ctx,mX,mY,cW,cH,pal);
@@ -994,7 +1009,7 @@ function generatePDF(){
 
     // Card bg
     doc.setFillColor(...rc(pal.card));
-    doc.roundedRect(x,y,cW,cH,5,5,'F');
+    doc.roundedRect(x,y,cW,cH,10,10,'F');
 
     // Background pattern
     if(customBg==='dots'){
@@ -1027,8 +1042,8 @@ function generatePDF(){
       const rPts=[]; for(let i=0;i<=cH;i+=2) rPts.push([x+cW+Math.sin(i*freq)*amp, y+i]);
       doc.lines(rPts.slice(1).map((p,i)=>[p[0]-rPts[i][0],p[1]-rPts[i][1]]),rPts[0][0],rPts[0][1]);
     } else {
-      doc.setDrawColor(...rc(pal.border));doc.setLineWidth(0.4);
-      doc.roundedRect(x,y,cW,cH,5,5,'S');
+      doc.setDrawColor(...rc(pal.border));doc.setLineWidth(0.7);
+      doc.roundedRect(x,y,cW,cH,10,10,'S');
     }
 
     // Title — generous top margin, bigger
@@ -1324,5 +1339,18 @@ window.onafterprint=()=>{$('print-zone').innerHTML='';};
 handleCallback();
 renderPaletteGrid();
 </script>
+
+<div style="max-width:680px;margin:2rem auto 0;padding:1rem 1.25rem 2.5rem;text-align:center;">
+  <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.5rem;">
+    <p style="font-size:0.72rem;color:#334155;line-height:1.7;">
+      ⚖️ <strong style="color:#475569;">Uso personal y no comercial únicamente.</strong>
+      Esta herramienta es de entretenimiento para uso privado.
+      No está afiliada ni patrocinada por Spotify AB.
+      El uso de la API de Spotify se realiza bajo sus
+      <a href="https://developer.spotify.com/terms" target="_blank" style="color:#475569;text-decoration:underline;">Términos de Servicio para Desarrolladores</a>.
+      <strong style="color:#475569;">Queda expresamente prohibida su comercialización, reventa o cualquier uso con fines lucrativos.</strong>
+    </p>
+  </div>
+</div>
 </body>
 </html>
